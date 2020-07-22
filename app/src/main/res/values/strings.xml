@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Vaartalap</string>
     <string name="settings">Settings</string>
+    <string name="please_enter_your_mobile_number">Please Enter Your Mobile Number</string>
+    <string name="your_phone_number">Your Phone Number</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="proceed">PROCEED</string>
+    <string name="change_mobile_number">Change Mobile Number ?</string>
+    <string name="enter_verification_code">Enter Verification Code</string>
 </resources>
