@@ -27,12 +27,9 @@ class HomeActivity : AppCompatActivity() {
         toolbar.title = getString(R.string.app_name)
         toolbar.setTitleTextColor(resources.getColor(R.color.white))
         setSupportActionBar(toolbar)
-
         tabLayout = findViewById(R.id.homeTabLayout)
         viewPager = findViewById(R.id.homeViewPager)
-
         setTabsAndViewPager()
-
     }
 
     private fun setTabsAndViewPager() {
