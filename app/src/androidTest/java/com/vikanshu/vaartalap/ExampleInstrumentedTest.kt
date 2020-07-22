@@ -1,4 +1,4 @@
-package com.vikanshu.mosaic
+package com.vikanshu.vaartalap
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

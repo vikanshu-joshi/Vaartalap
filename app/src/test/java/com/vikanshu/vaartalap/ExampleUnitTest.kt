@@ -1,4 +1,4 @@
-package com.vikanshu.mosaic
+package com.vikanshu.vaartalap
 
 import org.junit.Test
 

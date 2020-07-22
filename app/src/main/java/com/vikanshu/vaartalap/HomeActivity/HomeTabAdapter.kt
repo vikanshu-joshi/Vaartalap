@@ -1,10 +1,10 @@
-package com.vikanshu.mosaic.HomeActivity
+package com.vikanshu.vaartalap.HomeActivity
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.vikanshu.mosaic.HomeActivity.HomeFragments.ContactsFragment
-import com.vikanshu.mosaic.HomeActivity.HomeFragments.LogsFragment
+import com.vikanshu.vaartalap.HomeActivity.HomeFragments.ContactsFragment
+import com.vikanshu.vaartalap.HomeActivity.HomeFragments.LogsFragment
 
 class HomeViewPagerAdapter(fragmentManager: FragmentManager) :
     FragmentPagerAdapter(fragmentManager) {

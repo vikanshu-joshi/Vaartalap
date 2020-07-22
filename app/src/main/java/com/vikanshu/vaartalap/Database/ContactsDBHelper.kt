@@ -1,4 +1,4 @@
-package com.vikanshu.mosaic.Database
+package com.vikanshu.vaartalap.Database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

@@ -1,9 +1,9 @@
-package com.vikanshu.mosaic
+package com.vikanshu.vaartalap
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.vikanshu.mosaic.HomeActivity.HomeActivity
+import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

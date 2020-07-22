@@ -1,4 +1,4 @@
-package com.vikanshu.mosaic.HomeActivity
+package com.vikanshu.vaartalap.HomeActivity
 
 import android.os.Bundle
 import android.view.Menu
@@ -8,7 +8,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
-import com.vikanshu.mosaic.R
+import com.vikanshu.vaartalap.R
 
 class HomeActivity : AppCompatActivity() {
 

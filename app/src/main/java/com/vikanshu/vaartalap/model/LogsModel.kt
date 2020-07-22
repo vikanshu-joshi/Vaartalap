@@ -1,4 +1,4 @@
-package com.vikanshu.mosaic.model
+package com.vikanshu.vaartalap.model
 
 enum class LogType {
     OUTGOING,

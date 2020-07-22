@@ -1,11 +1,11 @@
-package com.vikanshu.mosaic.HomeActivity.HomeFragments
+package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.vikanshu.mosaic.R
+import com.vikanshu.vaartalap.R
 
 class ContactsFragment : Fragment() {
 
