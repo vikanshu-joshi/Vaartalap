@@ -142,6 +142,7 @@
                     android:layout_marginRight="64dp"
                     android:backgroundTint="@color/white"
                     android:hint="@string/enter_otp"
+                    android:inputType="number"
                     android:maxLines="1"
                     android:textAlignment="center"
                     android:textColor="@color/white"

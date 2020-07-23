@@ -1,13 +1,22 @@
 package com.vikanshu.vaartalap.LoginActivity
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthProvider
 import com.hbb20.CountryCodePicker
 import com.vikanshu.vaartalap.R
+import dmax.dialog.SpotsDialog
+import java.util.concurrent.TimeUnit
 
 class LoginActivity : AppCompatActivity() {
 
@@ -23,6 +32,20 @@ class LoginActivity : AppCompatActivity() {
     private var COUNTRY_CODE = "+91"
     private var NUMBER = ""
     private var otpWaiting = false
+    private lateinit var auth: FirebaseAuth
+    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+    private var storedVerificationId: String = ""
+
+    private lateinit var progressDialog: AlertDialog
+
+    private var otpEntered = ""
+
+    private val OTP_WAITING_STATE = "otpwaiting"
+    private val NUMBER_STATE = "number"
+    private val CODE_STATE = "code"
+    private val VERIFICATION_ID_STATE = "verificationId"
+    private val OTP_STATE = "otp"
+
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
         numberLayout = findViewById(R.id.number_input_layout)
         verifyOTP = findViewById(R.id.verifyOTP)
         changeNumber = findViewById(R.id.change_number)
-
+        auth = FirebaseAuth.getInstance()
         countryCode.setOnCountryChangeListener {
             COUNTRY_CODE = countryCode.selectedCountryCodeWithPlus
         }
@@ -48,12 +71,58 @@ class LoginActivity : AppCompatActivity() {
             if (number.isEmpty())
                 showToast("ENTER A VALID MOBILE NUMBER")
             else {
-                NUMBER = COUNTRY_CODE + number
-                numberLayout.visibility = View.GONE
-                otpLayout.visibility = View.VISIBLE
-                otpLayout.requestFocus()
-                userOTPRequest.text = "Please enter the verification code sent to $NUMBER"
-                otpWaiting = true
+                NUMBER = number
+                PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                    COUNTRY_CODE + NUMBER,
+                    60,
+                    TimeUnit.SECONDS,
+                    this,
+                    object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+                        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                            signInWithPhoneAuthCredential(credential)
+                        }
+
+                        override fun onVerificationFailed(e: FirebaseException) {
+                            if (e is FirebaseAuthInvalidCredentialsException) {
+                                showToast("INVALID NUMBER")
+                            } else if (e is FirebaseTooManyRequestsException) {
+                                showToast("TOO MANY REQUESTS, TRY AGAIN LATER")
+                            } else if (e is FirebaseNetworkException) {
+                                showToast("NO INTERNET")
+                            } else {
+                                showToast("SOME ERROR OCCURRED")
+                            }
+                        }
+
+                        override fun onCodeSent(
+                            verificationId: String,
+                            token: PhoneAuthProvider.ForceResendingToken
+                        ) {
+                            showToast("CODE SENT")
+
+                            storedVerificationId = verificationId
+                            resendToken = token
+
+                            numberLayout.visibility = View.GONE
+                            otpLayout.visibility = View.VISIBLE
+                            otpLayout.requestFocus()
+                            userOTPRequest.text =
+                                "Please enter the verification code sent to ${COUNTRY_CODE + "-" + NUMBER}"
+                            otpWaiting = true
+                        }
+                    })
+
+            }
+        }
+
+        verifyOTP.setOnClickListener {
+            val code = verifyOTP.text.toString()
+            if (code.isNullOrEmpty())
+                showToast("ENTER A VALID CODE")
+            else {
+                val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
+                signInWithPhoneAuthCredential(credential)
             }
         }
 
@@ -75,7 +144,61 @@ class LoginActivity : AppCompatActivity() {
             super.onBackPressed()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(OTP_WAITING_STATE, otpWaiting)
+        outState.putString(NUMBER_STATE, NUMBER)
+        outState.putString(CODE_STATE, COUNTRY_CODE)
+        outState.putString(VERIFICATION_ID_STATE, storedVerificationId)
+        outState.putString(OTP_STATE, otpEntered)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        COUNTRY_CODE = savedInstanceState.getString(CODE_STATE, "+91")
+        NUMBER = savedInstanceState.getString(NUMBER_STATE, "")
+        otpWaiting = savedInstanceState.getBoolean(OTP_WAITING_STATE)
+        storedVerificationId = savedInstanceState.getString(VERIFICATION_ID_STATE, "")
+        otpEntered = savedInstanceState.getString(OTP_STATE, "")
+        if (otpWaiting) {
+            numberLayout.visibility = View.GONE
+            otpLayout.visibility = View.VISIBLE
+            otpLayout.requestFocus()
+            userOTPRequest.text = "Please enter the verification code sent to $NUMBER"
+            otpWaiting = true
+            if (!(otpEntered.isNullOrEmpty() || otpEntered.isBlank()))
+                userOTP.setText(otpEntered)
+        } else {
+            numberLayout.visibility = View.VISIBLE
+            otpLayout.visibility = View.GONE
+            userPhone.requestFocus()
+            userPhone.setText(NUMBER)
+            otpWaiting = false
+        }
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        progressDialog = SpotsDialog.Builder()
+            .setContext(this)
+            .setMessage("Please Wait ..........")
+            .setCancelable(false)
+            .build()
+            .apply { show() }
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    progressDialog.dismiss()
+                    val user = task.result?.user
+                } else {
+                    progressDialog.dismiss()
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        showToast("INCORRECT CODE")
+                    }
+                }
+            }
     }
 }
