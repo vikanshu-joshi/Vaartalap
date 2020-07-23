@@ -17,6 +17,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.UserDataSharedPref
 import dmax.dialog.SpotsDialog
 import id.zelory.compressor.Compressor
 import java.io.ByteArrayOutputStream
@@ -33,6 +34,7 @@ class UserDetailsActivity : AppCompatActivity() {
     private var FINAL_USER_IMAGE_URI = "default"
     private lateinit var FINAL_USER_IMAGE_BITMAP: Bitmap
     private var FINAL_USER_NAME = ""
+    private lateinit var userPref: UserDataSharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,8 @@ class UserDetailsActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         firebaseStorage = FirebaseStorage.getInstance()
+
+        userPref = UserDataSharedPref(this)
 
 
         userImage.setOnClickListener {
@@ -99,8 +103,10 @@ class UserDetailsActivity : AppCompatActivity() {
                 val data = HashMap<String, Any>()
                 data["name"] = FINAL_USER_NAME
                 data["image"] = FINAL_USER_IMAGE_URI
-                data["number"] = auth.currentUser?.phoneNumber.toString()
-                firestore.collection("users").document(auth.uid.toString()).set(data)
+                data["uid"] = auth.uid.toString()
+                userPref.setImage(FINAL_USER_IMAGE_URI)
+                userPref.setName(FINAL_USER_NAME)
+                firestore.collection("users").document(userPref.getNumber().toString()).set(data)
                     .addOnCompleteListener { t ->
                         dialog.dismiss()
                         if (t.isSuccessful) {
@@ -132,18 +138,15 @@ class UserDetailsActivity : AppCompatActivity() {
                             val data = HashMap<String, Any>()
                             data["name"] = FINAL_USER_NAME
                             data["image"] = FINAL_USER_IMAGE_URI
-                            data["number"] = auth.currentUser?.phoneNumber.toString()
-                            firestore.collection("users").document(auth.uid.toString())
+                            data["uid"] = auth.uid.toString()
+                            userPref.setImage(FINAL_USER_IMAGE_URI)
+                            userPref.setName(FINAL_USER_NAME)
+                            firestore.collection("users").document(userPref.getNumber().toString())
                                 .set(data)
                                 .addOnCompleteListener { t ->
                                     dialog.dismiss()
                                     if (t.isSuccessful) {
-                                        startActivity(
-                                            Intent(
-                                                this,
-                                                HomeActivity::class.java
-                                            )
-                                        )
+                                        startActivity(Intent(this,HomeActivity::class.java))
                                         this.finish()
                                     } else {
                                         showToast(t.exception?.localizedMessage.toString())

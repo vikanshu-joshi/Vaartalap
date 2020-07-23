@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.hbb20.CountryCodePicker
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.UserDataSharedPref
 import com.vikanshu.vaartalap.UserDetails.UserDetailsActivity
 import dmax.dialog.SpotsDialog
 import java.util.concurrent.TimeUnit
@@ -211,13 +212,19 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val user = task.result?.user
-                    val data = firestore.collection("users").document(user?.uid.toString()).get()
+                    val data = firestore.collection("users").document(NUMBER).get()
+                    val pref = UserDataSharedPref(this)
+                    pref.setCode(COUNTRY_CODE)
+                    pref.setNumber(NUMBER)
+                    pref.setImage("default")
                     data.addOnCompleteListener {
+                        progressDialog.dismiss()
                         if (it.result!!.exists()) {
                             startActivity(Intent(this, HomeActivity::class.java))
+                            this.finish()
                         } else {
                             startActivity(Intent(this, UserDetailsActivity::class.java))
+                            this.finish()
                         }
                     }
                 } else {

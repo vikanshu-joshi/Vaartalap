@@ -27,12 +27,14 @@
         app:tabTextColor="@color/white"
         app:tabMaxWidth="0dp"
         app:tabBackground="@color/colorPrimary"
+        android:background="@color/white"
         app:tabMode="fixed">
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/homeViewPager"
         android:layout_width="match_parent"
+        android:background="@color/white"
         android:layout_height="match_parent">
     </androidx.viewpager.widget.ViewPager>
 

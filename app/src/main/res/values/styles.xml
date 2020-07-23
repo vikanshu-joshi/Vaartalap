@@ -1,10 +1,21 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textViewStyle">@style/textViewFonts</item>
+        <item name="android:buttonStyle">@style/buttonFont</item>
+    </style>
+
+    <style name="textViewFonts" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/allerta</item>
+    </style>
+
+    <style name="buttonFont" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">@font/allerta</item>
     </style>
 
 </resources>

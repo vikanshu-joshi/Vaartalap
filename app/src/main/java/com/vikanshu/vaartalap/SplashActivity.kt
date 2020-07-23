@@ -68,9 +68,10 @@ class SplashActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             this.finish()
         } else {
+            val pref = UserDataSharedPref(this)
+            val number = pref.getNumber()
             firestore = FirebaseFirestore.getInstance()
-            val user = auth.currentUser
-            val data = firestore.collection("users").document(user?.uid.toString()).get()
+            val data = firestore.collection("users").document(number.toString()).get()
             data.addOnCompleteListener {
                 if(it.result!!.exists()){
                     startActivity(Intent(this,HomeActivity::class.java))
