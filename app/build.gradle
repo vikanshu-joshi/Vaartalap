@@ -40,6 +40,9 @@ dependencies {
     implementation 'com.github.florent37:shapeofview:1.4.7'
     implementation 'com.hbb20:ccp:2.4.0'
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+    implementation 'id.zelory:compressor:2.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
     implementation 'com.google.firebase:firebase-auth:19.3.2'
     implementation 'com.google.firebase:firebase-firestore:21.5.0'

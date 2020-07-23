@@ -8,4 +8,7 @@
     <string name="proceed">PROCEED</string>
     <string name="change_mobile_number">Change Mobile Number ?</string>
     <string name="enter_verification_code">Enter Verification Code</string>
+    <string name="please_enter_your_details">Please Enter Your Details</string>
+    <string name="these_details_will_only_be_visible_to_users_having_your_contact_number">These details will only be visible to users having your contact number.</string>
+    <string name="name">Name</string>
 </resources>

@@ -2,6 +2,7 @@ package com.vikanshu.vaartalap.LoginActivity
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -13,8 +14,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.hbb20.CountryCodePicker
+import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.UserDetails.UserDetailsActivity
 import dmax.dialog.SpotsDialog
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var storedVerificationId: String = ""
+    private lateinit var firestore: FirebaseFirestore
 
     private lateinit var progressDialog: AlertDialog
 
@@ -61,7 +66,14 @@ class LoginActivity : AppCompatActivity() {
         numberLayout = findViewById(R.id.number_input_layout)
         verifyOTP = findViewById(R.id.verifyOTP)
         changeNumber = findViewById(R.id.change_number)
+
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+        progressDialog = SpotsDialog.Builder()
+            .setContext(this)
+            .setMessage("Please Wait ..........")
+            .setCancelable(false)
+            .build()
         countryCode.setOnCountryChangeListener {
             COUNTRY_CODE = countryCode.selectedCountryCodeWithPlus
         }
@@ -71,6 +83,7 @@ class LoginActivity : AppCompatActivity() {
             if (number.isEmpty())
                 showToast("ENTER A VALID MOBILE NUMBER")
             else {
+                progressDialog.show()
                 NUMBER = number
                 PhoneAuthProvider.getInstance().verifyPhoneNumber(
                     COUNTRY_CODE + NUMBER,
@@ -80,18 +93,28 @@ class LoginActivity : AppCompatActivity() {
                     object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
                         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
+                            userOTP.setText(credential.smsCode)
                             signInWithPhoneAuthCredential(credential)
                         }
 
                         override fun onVerificationFailed(e: FirebaseException) {
-                            if (e is FirebaseAuthInvalidCredentialsException) {
-                                showToast("INVALID NUMBER")
-                            } else if (e is FirebaseTooManyRequestsException) {
-                                showToast("TOO MANY REQUESTS, TRY AGAIN LATER")
-                            } else if (e is FirebaseNetworkException) {
-                                showToast("NO INTERNET")
-                            } else {
-                                showToast("SOME ERROR OCCURRED")
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
+                            when (e) {
+                                is FirebaseAuthInvalidCredentialsException -> {
+                                    showToast("INVALID NUMBER")
+                                }
+                                is FirebaseTooManyRequestsException -> {
+                                    showToast("TOO MANY REQUESTS, TRY AGAIN LATER")
+                                }
+                                is FirebaseNetworkException -> {
+                                    showToast("NO INTERNET")
+                                }
+                                else -> {
+                                    showToast("SOME ERROR OCCURRED")
+                                }
                             }
                         }
 
@@ -99,6 +122,8 @@ class LoginActivity : AppCompatActivity() {
                             verificationId: String,
                             token: PhoneAuthProvider.ForceResendingToken
                         ) {
+                            if (progressDialog.isShowing)
+                                progressDialog.dismiss()
                             showToast("CODE SENT")
 
                             storedVerificationId = verificationId
@@ -108,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
                             otpLayout.visibility = View.VISIBLE
                             otpLayout.requestFocus()
                             userOTPRequest.text =
-                                "Please enter the verification code sent to ${COUNTRY_CODE + "-" + NUMBER}"
+                                "Please enter the verification code sent to ${"$COUNTRY_CODE-$NUMBER"}"
                             otpWaiting = true
                         }
                     })
@@ -117,8 +142,8 @@ class LoginActivity : AppCompatActivity() {
         }
 
         verifyOTP.setOnClickListener {
-            val code = verifyOTP.text.toString()
-            if (code.isNullOrEmpty())
+            val code = userOTP.text.toString()
+            if (code.isEmpty())
                 showToast("ENTER A VALID CODE")
             else {
                 val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
@@ -182,17 +207,19 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        progressDialog = SpotsDialog.Builder()
-            .setContext(this)
-            .setMessage("Please Wait ..........")
-            .setCancelable(false)
-            .build()
-            .apply { show() }
+        progressDialog.show()
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    progressDialog.dismiss()
                     val user = task.result?.user
+                    val data = firestore.collection("users").document(user?.uid.toString()).get()
+                    data.addOnCompleteListener {
+                        if (it.result!!.exists()) {
+                            startActivity(Intent(this, HomeActivity::class.java))
+                        } else {
+                            startActivity(Intent(this, UserDetailsActivity::class.java))
+                        }
+                    }
                 } else {
                     progressDialog.dismiss()
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
