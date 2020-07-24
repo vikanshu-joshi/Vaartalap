@@ -8,6 +8,7 @@
     android:paddingTop="10dp"
     android:paddingStart="10dp"
     android:paddingEnd="10dp"
+    android:id="@+id/contact_user_tag"
     android:background="@color/white">
 
     <com.github.florent37.shapeofview.shapes.CircleView

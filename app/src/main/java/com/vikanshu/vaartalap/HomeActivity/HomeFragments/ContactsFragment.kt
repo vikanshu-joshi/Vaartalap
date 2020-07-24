@@ -2,19 +2,19 @@ package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
 import android.content.Context
 import android.database.Cursor
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vikanshu.vaartalap.Database.ContactsDBHelper
 import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
@@ -33,6 +33,7 @@ class ContactsFragment : Fragment() {
     private lateinit var refresh: FloatingActionButton
     private lateinit var userDataSharedPref: UserDataSharedPref
     private lateinit var ctx: Context
+    private lateinit var mOnClick: ContactsAdapter.ListItemClickListener
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +54,13 @@ class ContactsFragment : Fragment() {
         noContacts = v.findViewById(R.id.no_contacts_so_far)
         refresh = v.findViewById(R.id.refresh_contacts)
 
-        adapter = ContactsAdapter(ctx, contactsDBHelper.getAll())
+        mOnClick = object : ContactsAdapter.ListItemClickListener {
+            override fun onItemClicked(view: View) {
+                Toast.makeText(ctx,view.tag.toString(),Toast.LENGTH_LONG).show()
+            }
+        }
+
+        adapter = ContactsAdapter(ctx, contactsDBHelper.getAll(),mOnClick)
 
         contactsRecyclerView.adapter = adapter
         contactsRecyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -71,6 +78,7 @@ class ContactsFragment : Fragment() {
             Toast.makeText(ctx, "Refreshing", Toast.LENGTH_LONG).show()
             refreshContacts()
         }
+
         return v
     }
 
