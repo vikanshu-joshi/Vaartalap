@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.model.ContactsModel
 
-class ContactsAdapter(private val ctx: Context, private var data: List<ContactsModel>) :
+class ContactsAdapter(private val ctx: Context, private var data: ArrayList<ContactsModel>) :
     RecyclerView.Adapter<ContactsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
         val view = LayoutInflater.from(ctx).inflate(R.layout.contact_layout,parent,false)
@@ -24,21 +24,29 @@ class ContactsAdapter(private val ctx: Context, private var data: List<ContactsM
     }
 
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
-        holder.setViews(data[position].name,data[position].image,ctx)
+        holder.setViews(data[position].name,data[position].image,data[position].number,ctx)
+    }
+
+    fun updateData(newData: ContactsModel){
+        data.add(newData)
+        data = ArrayList(data.distinctBy { it.number })
+        this.notifyDataSetChanged()
     }
 
     fun setData(newData: List<ContactsModel>){
-        data = newData
-        notifyDataSetChanged()
+        data = ArrayList(newData)
+        this.notifyDataSetChanged()
     }
 }
 
 class ContactsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private var imageUser = itemView.findViewById<ImageView>(R.id.contact_image_contacts)
     private var nameUser = itemView.findViewById<TextView>(R.id.contact_name_contacts)
+    private var phoneUser = itemView.findViewById<TextView>(R.id.contact_number_contacts)
 
-    fun setViews(name: String,image: String,ctx: Context){
+    fun setViews(name: String,image: String,number: String,ctx: Context){
         nameUser.text = name
+        phoneUser.text = number
         if(image == "default"){
             imageUser.setImageDrawable(ctx.getDrawable(R.drawable.default_user))
         }else{

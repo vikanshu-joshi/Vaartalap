@@ -2,6 +2,7 @@ package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
 import android.content.Context
 import android.database.Cursor
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vikanshu.vaartalap.Database.ContactsDBHelper
 import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
@@ -23,7 +25,6 @@ import com.vikanshu.vaartalap.model.ContactsModel
 
 class ContactsFragment : Fragment() {
 
-    private lateinit var contactsList: ArrayList<ContactsModel>
     private lateinit var contactsDBHelper: ContactsDBHelper
     private lateinit var firestore: FirebaseFirestore
     private lateinit var contactsRecyclerView: RecyclerView
@@ -31,12 +32,15 @@ class ContactsFragment : Fragment() {
     private lateinit var noContacts: TextView
     private lateinit var refresh: FloatingActionButton
     private lateinit var userDataSharedPref: UserDataSharedPref
+    private lateinit var ctx: Context
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        contactsDBHelper = ContactsDBHelper(activity!!.applicationContext)
+        ctx = activity!!.applicationContext
+        contactsDBHelper = ContactsDBHelper(ctx)
         firestore = FirebaseFirestore.getInstance()
-        userDataSharedPref = UserDataSharedPref(activity!!.applicationContext)
+        userDataSharedPref = UserDataSharedPref(ctx)
     }
 
     override fun onCreateView(
@@ -44,33 +48,58 @@ class ContactsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.fragment_contacts, container, false)
+
         contactsRecyclerView = v.findViewById(R.id.recyclerViewContacts)
         noContacts = v.findViewById(R.id.no_contacts_so_far)
         refresh = v.findViewById(R.id.refresh_contacts)
-        contactsList = contactsDBHelper.getAll()
-        adapter = ContactsAdapter(activity!!.applicationContext, contactsList.toList())
+
+        adapter = ContactsAdapter(ctx, contactsDBHelper.getAll())
+
         contactsRecyclerView.adapter = adapter
-        contactsRecyclerView.layoutManager = LinearLayoutManager(activity!!.applicationContext)
-        if (contactsList.isEmpty()) {
+        contactsRecyclerView.layoutManager = LinearLayoutManager(ctx)
+
+        if (adapter.itemCount == 0) {
+            refreshContacts()
             contactsRecyclerView.visibility = View.GONE
             noContacts.visibility = View.VISIBLE
         } else {
             contactsRecyclerView.visibility = View.VISIBLE
             noContacts.visibility = View.GONE
         }
+
         refresh.setOnClickListener {
-            Toast.makeText(activity!!.applicationContext, "Refreshing", Toast.LENGTH_LONG).show()
-            refreshUserContacts(activity!!.applicationContext)
+            Toast.makeText(ctx, "Refreshing", Toast.LENGTH_LONG).show()
+            refreshContacts()
         }
         return v
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        refreshUserContacts(activity!!.applicationContext)
-        super.onActivityCreated(savedInstanceState)
+    private fun refreshContacts() {
+        val list = getContacts()
+        list.forEach {
+            firestore.collection("users").document(it.number).get().addOnSuccessListener { res ->
+                if (res.exists()) {
+                    val image = res.getString("image")
+                    val uid = res.getString("uid")
+                    val model = ContactsModel(it.name, it.number, uid!!, image!!)
+                    contactsDBHelper.store(model)
+                    adapter.updateData(model)
+                    if (contactsRecyclerView.visibility == View.GONE) {
+                        if (adapter.itemCount == 0) {
+                            contactsRecyclerView.visibility = View.GONE
+                            noContacts.visibility = View.VISIBLE
+                        } else {
+                            contactsRecyclerView.visibility = View.VISIBLE
+                            noContacts.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private fun refreshUserContacts(ctx: Context) {
+    private fun getContacts(): List<ContactsModel> {
+        val result = ArrayList<ContactsModel>()
         val cr = ctx.contentResolver
         val cur: Cursor? = cr?.query(
             ContactsContract.Contacts.CONTENT_URI,
@@ -108,43 +137,10 @@ class ContactsFragment : Fragment() {
                         phoneNo = phoneNo.replace(" ", "")
                         if (phoneNo.startsWith("+") || phoneNo.startsWith("0"))
                             phoneNo = phoneNo.substring(1)
-
                         if (phoneNo.startsWith("91"))
                             phoneNo = phoneNo.substring(2)
-
-                        if (phoneNo != userDataSharedPref.getNumber() && !contactsDBHelper.exists(phoneNo)) {
-                            firestore.collection("users").document(phoneNo).get()
-                                .addOnSuccessListener {
-                                    if (it.exists()) {
-                                        val data = it.data
-                                        contactsDBHelper.store(
-                                            ContactsModel(
-                                                name,
-                                                phoneNo,
-                                                data?.get("uid").toString(),
-                                                data?.get("image").toString()
-                                            )
-                                        )
-                                        contactsList.add(
-                                            ContactsModel(
-                                                name,
-                                                phoneNo,
-                                                data?.get("uid").toString(),
-                                                data?.get("image").toString()
-                                            )
-                                        )
-                                        adapter.setData(contactsList.distinctBy { e ->
-                                            e.number
-                                        })
-                                        if (contactsList.isEmpty()) {
-                                            contactsRecyclerView.visibility = View.GONE
-                                            noContacts.visibility = View.VISIBLE
-                                        } else {
-                                            contactsRecyclerView.visibility = View.VISIBLE
-                                            noContacts.visibility = View.GONE
-                                        }
-                                    }
-                                }
+                        if (phoneNo != userDataSharedPref.getNumber() && phoneNo.length == 10) {
+                            result.add(ContactsModel(name, phoneNo, "", "default"))
                         }
                     }
                     pCur.close()
@@ -152,7 +148,6 @@ class ContactsFragment : Fragment() {
             }
         }
         cur?.close()
-        contactsList = contactsDBHelper.getAll()
-        adapter.notifyDataSetChanged()
+        return result.distinctBy { it.number }
     }
 }
