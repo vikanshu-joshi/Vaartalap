@@ -76,6 +76,8 @@ class ContactsFragment : Fragment() {
 
     private fun refreshContacts() {
         val list = getContacts()
+        contactsDBHelper.deleteAll()
+        adapter.deleteAllData()
         list.forEach {
             firestore.collection("users").document(it.number).get().addOnSuccessListener { res ->
                 if (res.exists()) {

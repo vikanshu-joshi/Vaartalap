@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
+    android:background="@color/white"
     tools:context=".UserDetails.UserDetailsActivity">
 
     <TextView
@@ -27,6 +28,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginRight="24dp"
+        android:textColor="@color/black"
         android:text="@string/these_details_will_only_be_visible_to_users_having_your_contact_number"
         android:textAlignment="center" />
 

@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.model.ContactsModel
+
 
 class ContactsAdapter(private val ctx: Context, private var data: ArrayList<ContactsModel>) :
     RecyclerView.Adapter<ContactsViewHolder>() {
@@ -29,7 +31,6 @@ class ContactsAdapter(private val ctx: Context, private var data: ArrayList<Cont
 
     fun updateData(newData: ContactsModel){
         data.add(newData)
-        data = ArrayList(data.distinctBy { it.number })
         this.notifyDataSetChanged()
     }
 
@@ -37,10 +38,14 @@ class ContactsAdapter(private val ctx: Context, private var data: ArrayList<Cont
         data = ArrayList(newData)
         this.notifyDataSetChanged()
     }
+
+    fun deleteAllData(){
+        data.clear()
+    }
 }
 
 class ContactsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    private var imageUser = itemView.findViewById<ImageView>(R.id.contact_image_contacts)
+    var imageUser = itemView.findViewById<ImageView>(R.id.contact_image_contacts)
     private var nameUser = itemView.findViewById<TextView>(R.id.contact_name_contacts)
     private var phoneUser = itemView.findViewById<TextView>(R.id.contact_number_contacts)
 

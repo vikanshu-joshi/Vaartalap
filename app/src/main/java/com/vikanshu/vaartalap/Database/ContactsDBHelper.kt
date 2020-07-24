@@ -61,6 +61,12 @@ class ContactsDBHelper(ctx: Context) :
         }
     }
 
+    fun deleteAll(){
+        val db = this.writableDatabase
+        db.execSQL("delete from $TABLE_NAME")
+        db.close()
+    }
+
     fun exists(number: String): Boolean{
         var storeId = 2
         val db = this.readableDatabase
