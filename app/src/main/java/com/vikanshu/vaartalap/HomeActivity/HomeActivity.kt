@@ -2,18 +2,18 @@ package com.vikanshu.vaartalap.HomeActivity
 
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.UserDataSharedPref
 
 
 class HomeActivity : AppCompatActivity() {
@@ -24,6 +24,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var viewPagerAdapter: HomeViewPagerAdapter
     private val LOGS_TAB = "Logs"
     private val CONTACTS_TAB = "Contacts"
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var userPreferences: UserDataSharedPref
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,14 +38,19 @@ class HomeActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.homeTabLayout)
         viewPager = findViewById(R.id.homeViewPager)
         setTabsAndViewPager()
+        firestore = FirebaseFirestore.getInstance()
+        userPreferences = UserDataSharedPref(this)
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     return@OnCompleteListener
                 }
-                // Get new Instance ID token
                 val token = task.result?.token
-                println("home : $token")
+                val number = userPreferences.getNumber()
+                val data = HashMap<String,Any?>()
+                data["token"] = token
+                if (number != null)
+                    firestore.collection("users").document(number).update(data)
             })
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
     }
@@ -71,6 +78,7 @@ class HomeActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 viewPager.currentItem = tab.position
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })

@@ -35,7 +35,7 @@
             android:theme="@style/Base.Theme.AppCompat"/>
 
         <service
-            android:name=".FirebaseMessagingVaartalap"
+            android:name=".CallingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -104,6 +104,7 @@ class UserDetailsActivity : AppCompatActivity() {
                 data["name"] = FINAL_USER_NAME
                 data["image"] = FINAL_USER_IMAGE_URI
                 data["uid"] = auth.uid.toString()
+                data["token"] = ""
                 userPref.setImage(FINAL_USER_IMAGE_URI)
                 userPref.setName(FINAL_USER_NAME)
                 firestore.collection("users").document(userPref.getNumber().toString()).set(data)
@@ -139,6 +140,7 @@ class UserDetailsActivity : AppCompatActivity() {
                             data["name"] = FINAL_USER_NAME
                             data["image"] = FINAL_USER_IMAGE_URI
                             data["uid"] = auth.uid.toString()
+                            data["token"] = ""
                             userPref.setImage(FINAL_USER_IMAGE_URI)
                             userPref.setName(FINAL_USER_NAME)
                             firestore.collection("users").document(userPref.getNumber().toString())
