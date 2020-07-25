@@ -2,13 +2,19 @@ package com.vikanshu.vaartalap.HomeActivity
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager.widget.ViewPager
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.vikanshu.vaartalap.R
+
 
 class HomeActivity : AppCompatActivity() {
 
@@ -30,6 +36,16 @@ class HomeActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.homeTabLayout)
         viewPager = findViewById(R.id.homeViewPager)
         setTabsAndViewPager()
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    return@OnCompleteListener
+                }
+                // Get new Instance ID token
+                val token = task.result?.token
+                println("home : $token")
+            })
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true
     }
 
     private fun setTabsAndViewPager() {
