@@ -14,11 +14,13 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import com.jakewharton.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.SettingsActivity.SettingsActivity
-import com.vikanshu.vaartalap.UserDataSharedPref
 
 
 class HomeActivity : AppCompatActivity() {
@@ -43,6 +45,7 @@ class HomeActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.homeTabLayout)
         viewPager = findViewById(R.id.homeViewPager)
         setTabsAndViewPager()
+        offlineFeatures()
         firestore = FirebaseFirestore.getInstance()
         userPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         FirebaseInstanceId.getInstance().instanceId
@@ -98,5 +101,14 @@ class HomeActivity : AppCompatActivity() {
         if(item.itemId == R.id.settings_home)
             startActivity(Intent(this,SettingsActivity::class.java))
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun offlineFeatures(){
+                val builder = Picasso.Builder(this)
+        builder.downloader(OkHttp3Downloader(this,Integer.MAX_VALUE.toLong()))
+        val built = builder.build()
+        built.setIndicatorsEnabled(false)
+        built.isLoggingEnabled = true
+        Picasso.setSingletonInstance(built)
     }
 }

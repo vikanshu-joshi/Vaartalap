@@ -19,6 +19,9 @@
     <string name="preference_key_code">code</string>
     <string name="preference_key_screenshots">screenshots</string>
     <string name="preference_key_ringtone">ringtone</string>
+    <string name="preference_key_missed_call_notification">missed call notification</string>
+    <string name="preference_key_incoming_call_notification">incoming call notification</string>
+    <string name="preference_key_video_message_notification">video message notification</string>
 
 
     <string-array name="ringtones_list">

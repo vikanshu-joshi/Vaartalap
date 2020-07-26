@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.LoginActivity.LoginActivity
 import com.vikanshu.vaartalap.UserDetailsActivity.UserDetailsActivity
@@ -34,6 +35,10 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .build()
+        FirebaseFirestore.getInstance().firestoreSettings = settings
         auth = FirebaseAuth.getInstance()
 
         if (!hasAllPermissions(this, *permissions)) // if permissions not granted then ask for them

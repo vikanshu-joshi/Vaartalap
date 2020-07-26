@@ -26,13 +26,6 @@
 
     <PreferenceCategory android:title="App Settings" app:iconSpaceReserved="false">
 
-        <SwitchPreference
-            android:key="@string/preference_key_screenshots"
-            android:defaultValue="false"
-            android:title="Screenshots"
-            app:icon="@drawable/ic_screenshot"
-            android:summary="Allow Other User to take screenshots while calling"/>
-
         <ListPreference
             android:key="@string/preference_key_ringtone"
             app:icon="@drawable/ic_ringtone"
@@ -40,8 +33,46 @@
             android:entryValues="@array/ringtone_values"
             android:title="Ringtone"
             app:useSimpleSummaryProvider="true"
-            android:defaultValue="R.raw.child_laugh"
-            />
+            android:defaultValue="R.raw.child_laugh" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Notifications" app:iconSpaceReserved="false">
+
+        <CheckBoxPreference
+            android:title="Incoming Calls Notifications"
+            app:icon="@drawable/ic_notifications"
+            app:summaryOn="Enabled"
+            app:summaryOff="Disabled"
+            android:key="@string/preference_key_incoming_call_notification"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:title="Missed Calls Notifications"
+            app:icon="@drawable/ic_missed_call"
+            app:summaryOn="Enabled"
+            app:summaryOff="Disabled"
+            android:key="@string/preference_key_missed_call_notification"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:title="Video Message Notifications"
+            app:icon="@drawable/ic_video_message"
+            app:summaryOn="Enabled"
+            app:summaryOff="Disabled"
+            android:key="@string/preference_key_video_message_notification"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Privacy" app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="@string/preference_key_screenshots"
+            android:defaultValue="false"
+            android:title="Screenshots"
+            app:icon="@drawable/ic_screenshot"
+            android:summary="Allow Other User to take screenshots while calling"/>
 
     </PreferenceCategory>
 

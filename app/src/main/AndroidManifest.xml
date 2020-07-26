@@ -22,6 +22,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="q">
         <activity android:name=".SettingsActivity.SettingsActivity"
+            android:parentActivityName=".HomeActivity.HomeActivity"
             android:launchMode="singleTop"/>
         <activity android:name=".UserDetailsActivity.UserDetailsActivity" />
         <activity android:name=".LoginActivity.LoginActivity" />

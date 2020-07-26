@@ -75,7 +75,6 @@ class ContactsViewHolder(
                 .load(Uri.parse(image))
                 .placeholder(ctx.getDrawable(R.drawable.icon_loading))
                 .error(ctx.getDrawable(R.drawable.default_user))
-                .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(imageUser,object : Callback {
                     override fun onSuccess() {}
                     override fun onError() {
