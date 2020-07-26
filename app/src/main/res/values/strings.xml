@@ -11,4 +11,26 @@
     <string name="please_enter_your_details">Please Enter Your Details</string>
     <string name="these_details_will_only_be_visible_to_users_having_your_contact_number">These details will only be visible to users having your contact number.</string>
     <string name="name">Name</string>
+
+    <string name="preference_key_name">name</string>
+    <string name="preference_key_uid">uid</string>
+    <string name="preference_key_image">image</string>
+    <string name="preference_key_number">number</string>
+    <string name="preference_key_code">code</string>
+    <string name="preference_key_screenshots">screenshots</string>
+    <string name="preference_key_ringtone">ringtone</string>
+
+
+    <string-array name="ringtones_list">
+        <item>Child Laugh</item>
+        <item>iPhone</item>
+        <item>Hangouts</item>
+        <item>MI</item>
+    </string-array>
+    <string-array name="ringtone_values">
+        <item>R.raw.child_laugh</item>
+        <item>R.raw.iphone_call</item>
+        <item>R.raw.hangouts_call</item>
+        <item>R.raw.mi_call</item>
+    </string-array>
 </resources>

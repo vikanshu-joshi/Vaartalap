@@ -1,9 +1,13 @@
 package com.vikanshu.vaartalap.HomeActivity
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.tabs.TabLayout
@@ -13,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.SettingsActivity.SettingsActivity
 import com.vikanshu.vaartalap.UserDataSharedPref
 
 
@@ -25,7 +30,7 @@ class HomeActivity : AppCompatActivity() {
     private val LOGS_TAB = "Logs"
     private val CONTACTS_TAB = "Contacts"
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var userPreferences: UserDataSharedPref
+    private lateinit var userPreferences: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +44,14 @@ class HomeActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.homeViewPager)
         setTabsAndViewPager()
         firestore = FirebaseFirestore.getInstance()
-        userPreferences = UserDataSharedPref(this)
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     return@OnCompleteListener
                 }
                 val token = task.result?.token
-                val number = userPreferences.getNumber()
+                val number = userPreferences.getString(getString(R.string.preference_key_number),"")
                 val data = HashMap<String,Any?>()
                 data["token"] = token
                 if (number != null)
@@ -87,5 +92,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.settings_home)
+            startActivity(Intent(this,SettingsActivity::class.java))
+        return super.onOptionsItemSelected(item)
     }
 }

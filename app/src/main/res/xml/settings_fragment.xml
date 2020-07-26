@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Account" app:iconSpaceReserved="false">
+
+        <EditTextPreference
+            android:defaultValue="Not Set"
+            android:key="@string/preference_key_name"
+            app:icon="@drawable/ic_user"
+            app:useSimpleSummaryProvider="true"
+            android:summary=" "
+            android:enabled="false"
+            android:title="Username" />
+
+        <EditTextPreference
+            android:key="@string/preference_key_number"
+            app:icon="@drawable/ic_phone"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="Not Set"
+            android:summary=" "
+            android:enabled="false"
+            android:title="Phone"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="App Settings" app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="@string/preference_key_screenshots"
+            android:defaultValue="false"
+            android:title="Screenshots"
+            app:icon="@drawable/ic_screenshot"
+            android:summary="Allow Other User to take screenshots while calling"/>
+
+        <ListPreference
+            android:key="@string/preference_key_ringtone"
+            app:icon="@drawable/ic_ringtone"
+            android:entries="@array/ringtones_list"
+            android:entryValues="@array/ringtone_values"
+            android:title="Ringtone"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="R.raw.child_laugh"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

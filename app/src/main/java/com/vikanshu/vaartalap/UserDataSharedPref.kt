@@ -21,9 +21,9 @@ class UserDataSharedPref(ctx: Context) {
         return prefs.getString(KEY_IMAGE, "default")
     }
 
-    fun getNumber(): String? {
-        return prefs.getString(KEY_NUMBER, null)
-    }
+//    fun getNumber(): String? {
+//        return prefs.getString(KEY_NUMBER, null)
+//    }
 
     fun getCode(): String? {
         return prefs.getString(KEY_CODE, null)

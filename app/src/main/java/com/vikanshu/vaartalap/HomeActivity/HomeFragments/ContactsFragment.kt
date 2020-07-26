@@ -1,6 +1,7 @@
 package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -12,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,17 +33,17 @@ class ContactsFragment : Fragment() {
     private lateinit var adapter: ContactsAdapter
     private lateinit var noContacts: TextView
     private lateinit var refresh: FloatingActionButton
-    private lateinit var userDataSharedPref: UserDataSharedPref
+    private lateinit var userDataSharedPref: SharedPreferences
     private lateinit var ctx: Context
     private lateinit var mOnClick: ContactsAdapter.ListItemClickListener
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ctx = activity!!.applicationContext
+        ctx = requireActivity().applicationContext
         contactsDBHelper = ContactsDBHelper(ctx)
         firestore = FirebaseFirestore.getInstance()
-        userDataSharedPref = UserDataSharedPref(ctx)
+        userDataSharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
     }
 
     override fun onCreateView(
@@ -149,7 +151,7 @@ class ContactsFragment : Fragment() {
                             phoneNo = phoneNo.substring(1)
                         if (phoneNo.startsWith("91"))
                             phoneNo = phoneNo.substring(2)
-                        if (phoneNo != userDataSharedPref.getNumber() && phoneNo.length == 10) {
+                        if (phoneNo != userDataSharedPref.getString("number","") && phoneNo.length == 10) {
                             result.add(ContactsModel(name, phoneNo, "", "default"))
                         }
                     }

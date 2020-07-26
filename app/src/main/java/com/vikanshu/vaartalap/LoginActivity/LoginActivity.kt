@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.preference.PreferenceManager
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -19,7 +20,7 @@ import com.hbb20.CountryCodePicker
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.UserDataSharedPref
-import com.vikanshu.vaartalap.UserDetails.UserDetailsActivity
+import com.vikanshu.vaartalap.UserDetailsActivity.UserDetailsActivity
 import dmax.dialog.SpotsDialog
 import java.util.concurrent.TimeUnit
 
@@ -179,6 +180,7 @@ class LoginActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         COUNTRY_CODE = savedInstanceState.getString(CODE_STATE, "+91")
         NUMBER = savedInstanceState.getString(NUMBER_STATE, "")
@@ -191,7 +193,7 @@ class LoginActivity : AppCompatActivity() {
             otpLayout.requestFocus()
             userOTPRequest.text = "Please enter the verification code sent to $NUMBER"
             otpWaiting = true
-            if (!(otpEntered.isNullOrEmpty() || otpEntered.isBlank()))
+            if (!(otpEntered.isEmpty() || otpEntered.isBlank()))
                 userOTP.setText(otpEntered)
         } else {
             numberLayout.visibility = View.VISIBLE
@@ -213,16 +215,27 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val data = firestore.collection("users").document(NUMBER).get()
-                    val pref = UserDataSharedPref(this)
-                    pref.setCode(COUNTRY_CODE)
-                    pref.setNumber(NUMBER)
-                    pref.setImage("default")
+                    val pref = PreferenceManager.getDefaultSharedPreferences(this)
+                    var editor = pref.edit()
+                    editor.putString(getString(R.string.preference_key_code),COUNTRY_CODE)
+                    editor.putString(getString(R.string.preference_key_number),NUMBER)
+                    editor.putString(getString(R.string.preference_key_image),"default")
+                    editor.apply()
                     data.addOnCompleteListener {
-                        progressDialog.dismiss()
                         if (it.result!!.exists()) {
+                            val info = it.result!!.data
+                            editor = pref.edit()
+                            editor.putString(getString(R.string.preference_key_code),COUNTRY_CODE)
+                            editor.putString(getString(R.string.preference_key_name),info?.get("name").toString())
+                            editor.putString(getString(R.string.preference_key_number),NUMBER)
+                            editor.putString(getString(R.string.preference_key_image),info?.get("image").toString())
+                            editor.putString(getString(R.string.preference_key_uid),info?.get("uid").toString())
+                            editor.apply()
+                            progressDialog.dismiss()
                             startActivity(Intent(this, HomeActivity::class.java))
                             this.finish()
                         } else {
+                            progressDialog.dismiss()
                             startActivity(Intent(this, UserDetailsActivity::class.java))
                             this.finish()
                         }

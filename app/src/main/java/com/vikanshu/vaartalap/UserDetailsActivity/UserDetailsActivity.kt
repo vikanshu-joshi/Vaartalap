@@ -1,4 +1,4 @@
-package com.vikanshu.vaartalap.UserDetails
+package com.vikanshu.vaartalap.UserDetailsActivity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -101,13 +102,16 @@ class UserDetailsActivity : AppCompatActivity() {
                     SpotsDialog.Builder().setContext(this).setCancelable(false)
                         .setMessage("Please Wait....").build().apply { show() }
                 val data = HashMap<String, Any>()
-                data["name"] = FINAL_USER_NAME
-                data["image"] = FINAL_USER_IMAGE_URI
-                data["uid"] = auth.uid.toString()
+                data[getString(R.string.preference_key_name)] = FINAL_USER_NAME
+                data[getString(R.string.preference_key_image)] = FINAL_USER_IMAGE_URI
+                data[getString(R.string.preference_key_uid)] = auth.uid.toString()
                 data["token"] = ""
-                userPref.setImage(FINAL_USER_IMAGE_URI)
-                userPref.setName(FINAL_USER_NAME)
-                firestore.collection("users").document(userPref.getNumber().toString()).set(data)
+                val manager = PreferenceManager.getDefaultSharedPreferences(this)
+                val editor = manager.edit()
+                editor.putString(getString(R.string.preference_key_name),FINAL_USER_NAME)
+                editor.putString(getString(R.string.preference_key_image),FINAL_USER_IMAGE_URI)
+                editor.apply()
+                firestore.collection("users").document(manager.getString(getString(R.string.preference_key_number),FINAL_USER_NAME).toString()).set(data)
                     .addOnCompleteListener { t ->
                         dialog.dismiss()
                         if (t.isSuccessful) {
@@ -137,13 +141,16 @@ class UserDetailsActivity : AppCompatActivity() {
                                 FINAL_USER_IMAGE_URI = "default"
                             }
                             val data = HashMap<String, Any>()
-                            data["name"] = FINAL_USER_NAME
-                            data["image"] = FINAL_USER_IMAGE_URI
-                            data["uid"] = auth.uid.toString()
+                            data[getString(R.string.preference_key_name)] = FINAL_USER_NAME
+                            data[getString(R.string.preference_key_image)] = FINAL_USER_IMAGE_URI
+                            data[getString(R.string.preference_key_uid)] = auth.uid.toString()
                             data["token"] = ""
-                            userPref.setImage(FINAL_USER_IMAGE_URI)
-                            userPref.setName(FINAL_USER_NAME)
-                            firestore.collection("users").document(userPref.getNumber().toString())
+                            val manager = PreferenceManager.getDefaultSharedPreferences(this)
+                            val editor = manager.edit()
+                            editor.putString(getString(R.string.preference_key_name),FINAL_USER_NAME)
+                            editor.putString(getString(R.string.preference_key_image),FINAL_USER_IMAGE_URI)
+                            editor.apply()
+                            firestore.collection("users").document(manager.getString(getString(R.string.preference_key_number),FINAL_USER_NAME).toString())
                                 .set(data)
                                 .addOnCompleteListener { t ->
                                     dialog.dismiss()

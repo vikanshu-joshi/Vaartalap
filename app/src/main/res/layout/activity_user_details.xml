@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
     android:background="@color/white"
-    tools:context=".UserDetails.UserDetailsActivity">
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context=".UserDetailsActivity.UserDetailsActivity">
 
     <TextView
         android:id="@+id/__"
@@ -19,7 +19,7 @@
         android:text="@string/please_enter_your_details"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="18sp"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/___"
@@ -28,9 +28,9 @@
         android:layout_marginLeft="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginRight="24dp"
-        android:textColor="@color/black"
         android:text="@string/these_details_will_only_be_visible_to_users_having_your_contact_number"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="@color/black" />
 
     <com.github.florent37.shapeofview.shapes.CircleView
         android:id="@+id/userImage"
@@ -57,9 +57,12 @@
         android:layout_marginLeft="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginRight="24dp"
+        android:backgroundTint="@color/black"
         android:ems="10"
         android:hint="@string/name"
         android:inputType="textPersonName"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
         tools:layout_editor_absoluteY="492dp" />
 
     <Button

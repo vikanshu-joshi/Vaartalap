@@ -8,11 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.LoginActivity.LoginActivity
-import com.vikanshu.vaartalap.UserDetails.UserDetailsActivity
+import com.vikanshu.vaartalap.UserDetailsActivity.UserDetailsActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -68,8 +69,8 @@ class SplashActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             this.finish()
         } else {
-            val pref = UserDataSharedPref(this)
-            val number = pref.getNumber()
+            val pref = PreferenceManager.getDefaultSharedPreferences(this)
+            val number = pref.getString(getString(R.string.preference_key_number),"")
             firestore = FirebaseFirestore.getInstance()
             val data = firestore.collection("users").document(number.toString()).get()
             data.addOnCompleteListener {
