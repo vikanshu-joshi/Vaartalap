@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.model.ContactsModel
@@ -21,7 +24,7 @@ class ContactsAdapter(
     RecyclerView.Adapter<ContactsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
         val view = LayoutInflater.from(ctx).inflate(R.layout.contact_layout, parent, false)
-        return ContactsViewHolder(view,mOnClick)
+        return ContactsViewHolder(view, mOnClick)
     }
 
     override fun getItemCount(): Int {
@@ -51,7 +54,10 @@ class ContactsAdapter(
     }
 }
 
-class ContactsViewHolder(itemView: View, private var mOnClick: ContactsAdapter.ListItemClickListener) :
+class ContactsViewHolder(
+    itemView: View,
+    private var mOnClick: ContactsAdapter.ListItemClickListener
+) :
     RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private var imageUser = itemView.findViewById<ImageView>(R.id.contact_image_contacts)
@@ -65,7 +71,17 @@ class ContactsViewHolder(itemView: View, private var mOnClick: ContactsAdapter.L
         if (image == "default") {
             imageUser.setImageDrawable(ctx.getDrawable(R.drawable.default_user))
         } else {
-            Picasso.with(ctx).load(Uri.parse(image)).into(imageUser)
+            Picasso.with(ctx)
+                .load(Uri.parse(image))
+                .placeholder(ctx.getDrawable(R.drawable.icon_loading))
+                .error(ctx.getDrawable(R.drawable.default_user))
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(imageUser,object : Callback {
+                    override fun onSuccess() {}
+                    override fun onError() {
+                        Toast.makeText(ctx,"Error loading profile image of $name",Toast.LENGTH_LONG).show()
+                    }
+                })
         }
         v.tag = number
         v.setOnClickListener(this)
