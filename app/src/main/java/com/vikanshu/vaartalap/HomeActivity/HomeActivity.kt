@@ -45,7 +45,6 @@ class HomeActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.homeTabLayout)
         viewPager = findViewById(R.id.homeViewPager)
         setTabsAndViewPager()
-        offlineFeatures()
         firestore = FirebaseFirestore.getInstance()
         userPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         FirebaseInstanceId.getInstance().instanceId
@@ -101,14 +100,5 @@ class HomeActivity : AppCompatActivity() {
         if(item.itemId == R.id.settings_home)
             startActivity(Intent(this,SettingsActivity::class.java))
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun offlineFeatures(){
-                val builder = Picasso.Builder(this)
-        builder.downloader(OkHttp3Downloader(this,Integer.MAX_VALUE.toLong()))
-        val built = builder.build()
-        built.setIndicatorsEnabled(false)
-        built.isLoggingEnabled = true
-        Picasso.setSingletonInstance(built)
     }
 }

@@ -12,6 +12,8 @@ import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.jakewharton.picasso.OkHttp3Downloader
+import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
 import com.vikanshu.vaartalap.LoginActivity.LoginActivity
 import com.vikanshu.vaartalap.UserDetailsActivity.UserDetailsActivity
@@ -35,10 +37,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-            .build()
-        FirebaseFirestore.getInstance().firestoreSettings = settings
+//        offlineFeatures()
         auth = FirebaseAuth.getInstance()
 
         if (!hasAllPermissions(this, *permissions)) // if permissions not granted then ask for them
@@ -97,5 +96,18 @@ class SplashActivity : AppCompatActivity() {
                 return false
         }
         return true
+    }
+
+    private fun offlineFeatures(){
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .build()
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+        val builder = Picasso.Builder(this)
+        builder.downloader(OkHttp3Downloader(this,Integer.MAX_VALUE.toLong()))
+        val built = builder.build()
+        built.setIndicatorsEnabled(false)
+        built.isLoggingEnabled = true
+        Picasso.setSingletonInstance(built)
     }
 }
