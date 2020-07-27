@@ -251,4 +251,4 @@ fabric.properties
 
 app/google-services.json
 firebase.json
-
+app/src/main/res/values/strings.xml

@@ -31,7 +31,12 @@ class SplashActivity : AppCompatActivity() {
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.CAMERA,
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.READ_PHONE_STATE
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WAKE_LOCK,
+        Manifest.permission.MODIFY_AUDIO_SETTINGS,
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.BLUETOOTH
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +63,12 @@ class SplashActivity : AppCompatActivity() {
                     && grantResults[3] == PackageManager.PERMISSION_GRANTED
                     && grantResults[4] == PackageManager.PERMISSION_GRANTED
                     && grantResults[5] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[6] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[6] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[7] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[8] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[9] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[10] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[11] == PackageManager.PERMISSION_GRANTED) {
                     move()
                 } else {
                     Toast.makeText(this,"APP NEEDS ALL THE PERMISSIONS TO CONTINUE",Toast.LENGTH_LONG).show()

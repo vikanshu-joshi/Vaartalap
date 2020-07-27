@@ -24,6 +24,8 @@
     <string name="preference_key_video_message_notification">video message notification</string>
     <string name="calling">CALLING</string>
     <string name="incoming">INCOMING CALL FROM</string>
+    <string name="agora_app_id"></string>
+    <string name="agora_access_token"></string>
 
 
     <string-array name="ringtones_list">
