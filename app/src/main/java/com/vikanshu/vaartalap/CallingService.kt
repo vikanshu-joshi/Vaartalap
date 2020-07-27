@@ -12,7 +12,7 @@ open class CallingService : FirebaseMessagingService() {
         val data = HashMap<String, Any?>()
         data["token"] = token
         if (number != null)
-            FirebaseFirestore.getInstance().collection("users").document(number).update(data)
+            FirebaseFirestore.getInstance().collection("tokens").document(number).update(data)
         super.onNewToken(token)
     }
 

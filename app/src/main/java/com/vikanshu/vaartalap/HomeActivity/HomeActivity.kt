@@ -57,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
                 val data = HashMap<String,Any?>()
                 data["token"] = token
                 if (number != null)
-                    firestore.collection("users").document(number).update(data)
+                    firestore.collection("tokens").document(number).update(data)
             })
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
     }

@@ -24,7 +24,7 @@ import io.agora.rtc.RtcEngine
 import io.agora.rtc.video.VideoCanvas
 import io.agora.rtc.video.VideoEncoderConfiguration
 
-class IncomingCallActivity : AppCompatActivity() {
+class CallingActivity : AppCompatActivity() {
 
     private lateinit var callID: String
     private lateinit var callerName: String
@@ -55,6 +55,8 @@ class IncomingCallActivity : AppCompatActivity() {
 
     private lateinit var ringtone: String
     private var screenshotsAllowed = false
+
+    private lateinit var callType: String
 
     private lateinit var firebaseFirestore: FirebaseFirestore
 
@@ -192,7 +194,7 @@ class IncomingCallActivity : AppCompatActivity() {
                 9 -> {
                     runOnUiThread {
                         Toast.makeText(
-                            this@IncomingCallActivity,
+                            this@CallingActivity,
                             "Returning to video call",
                             Toast.LENGTH_LONG
                         ).show()
@@ -236,6 +238,7 @@ class IncomingCallActivity : AppCompatActivity() {
         callerUID = extras?.get("uid").toString()
         callID = extras?.get("id").toString()
         channelName = extras?.get("channel").toString()
+        callType = extras?.get("type").toString()
 
 
         myName = prefs.getString(getString(R.string.preference_key_name), "").toString()
@@ -258,23 +261,12 @@ class IncomingCallActivity : AppCompatActivity() {
         audioChanged = findViewById(R.id.audio_mute)
         callGoingImage = findViewById(R.id.image_call_going)
 
-        incomingCallLayout.visibility = View.VISIBLE
-        videoChatLayout.visibility = View.GONE
-        progressBar.visibility = View.GONE
-
-        setView()
-
         firebaseFirestore = FirebaseFirestore.getInstance()
-
-        acceptCallButton.setOnClickListener { acceptCall() }
-        rejectCallButton.setOnClickListener { rejectCall() }
+        setView()
     }
 
     private fun acceptCall() {
         callAccepted = true
-//        firebaseFirestore.collection("status").document(myNumber).update("status", "BUSY")
-//        firebaseFirestore.collection("users").document(myNumber)
-//            .collection("LOGS").document(callID).update("status", "A")
         incomingCallLayout.visibility = View.GONE
         videoChatLayout.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
@@ -304,23 +296,31 @@ class IncomingCallActivity : AppCompatActivity() {
     }
 
     private fun setView() {
-        callerNameView.text = callerName
-        callerNumberView.text = callerNumber
-        callTypeView.text = getString(R.string.incoming)
-        Picasso.with(this).load(callerImage)
-            .placeholder(this.getDrawable(R.drawable.icon_loading))
-            .error(this.getDrawable(R.drawable.default_user))
-            .into(callerImageView, object : Callback {
-                override fun onSuccess() {}
-                override fun onError() {
-                    Toast.makeText(
-                        this@IncomingCallActivity,
-                        "Error loading caller image",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
-//        callGoingImage.visibility = View.INVISIBLE
+        if(callType == "I"){
+            callerNameView.text = callerName
+            callerNumberView.text = callerNumber
+            callTypeView.text = getString(R.string.incoming)
+            Picasso.with(this).load(callerImage)
+                .placeholder(this.getDrawable(R.drawable.icon_loading))
+                .error(this.getDrawable(R.drawable.default_user))
+                .into(callerImageView, object : Callback {
+                    override fun onSuccess() {}
+                    override fun onError() {
+                        Toast.makeText(
+                            this@CallingActivity,
+                            "Error loading caller image",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                })
+            acceptCallButton.setOnClickListener { acceptCall() }
+            rejectCallButton.setOnClickListener { rejectCall() }
+        }else{
+            incomingCallLayout.visibility = View.GONE
+            videoChatLayout.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
+            initAgoraEngineAndJoinChannel()
+        }
         Picasso.with(this).load(callerImage)
             .placeholder(this.getDrawable(R.drawable.icon_loading))
             .error(this.getDrawable(R.drawable.default_user))
@@ -505,7 +505,7 @@ class IncomingCallActivity : AppCompatActivity() {
 
     companion object {
 
-        private val LOG_TAG = IncomingCallActivity::class.java.simpleName
+        private val LOG_TAG = CallingActivity::class.java.simpleName
 
         private const val PERMISSION_REQ_ID_RECORD_AUDIO = 22
         private const val PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1

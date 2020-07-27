@@ -9,13 +9,12 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
 
     <application
         android:allowBackup="true"
@@ -27,7 +26,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <activity android:name=".CallingActivity.IncomingCallActivity" android:screenOrientation="portrait"/>
+        <service
+            android:name=".TempIncomingService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".CallingActivity.CallingActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity.SettingsActivity"
             android:launchMode="singleTop"

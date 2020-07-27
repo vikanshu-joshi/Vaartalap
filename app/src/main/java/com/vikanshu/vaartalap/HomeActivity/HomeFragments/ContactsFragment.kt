@@ -1,15 +1,14 @@
 package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -18,10 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
+import com.vikanshu.vaartalap.CallingActivity.CallingActivity
 import com.vikanshu.vaartalap.Database.ContactsDBHelper
 import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
 import com.vikanshu.vaartalap.R
-import com.vikanshu.vaartalap.UserDataSharedPref
 import com.vikanshu.vaartalap.model.ContactsModel
 
 
@@ -59,6 +58,10 @@ class ContactsFragment : Fragment() {
         mOnClick = object : ContactsAdapter.ListItemClickListener {
             override fun onItemClicked(view: View) {
                 Toast.makeText(ctx,view.tag.toString(),Toast.LENGTH_LONG).show()
+                val intent = Intent(ctx,CallingActivity::class.java)
+                intent.putExtra("type","O")
+                intent.putExtra("channel","vikanshu")
+                startActivity(intent)
             }
         }
 
