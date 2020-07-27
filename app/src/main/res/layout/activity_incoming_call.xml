@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:weightSum="1"
         tools:context=".CallingActivity.IncomingCallActivity">
 
@@ -102,16 +102,68 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/activity_video_chat_view"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         tools:context=".MainActivity">
+
+        <com.github.florent37.shapeofview.shapes.CircleView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="50dp"
+            app:layout_constraintBottom_toTopOf="@+id/local_video_view_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/audio_mute">
+
+            <ImageView
+                android:id="@+id/image_call_going"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/default_user" />
+
+        </com.github.florent37.shapeofview.shapes.CircleView>
+
+        <TextView
+            android:id="@+id/audio_mute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/gray"
+            android:padding="10dp"
+            android:text="@string/audio_muted"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:translationZ="10dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/video_mute"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/video_mute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/gray"
+            android:padding="10dp"
+            android:text="@string/no_video_from_user"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:translationZ="10dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/remote_video_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/local_video_view_container"
@@ -141,29 +193,54 @@
                 android:layout_height="50dp"
                 android:orientation="horizontal">
 
-                <ImageView
+                <com.github.florent37.shapeofview.shapes.CircleView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="20"
-                    android:onClick="onLocalVideoMuteClicked"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/video_enabled" />
+                    android:layout_weight="20">
 
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="20"
-                    android:onClick="onLocalAudioMuteClicked"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/mic_enabled" />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        android:background="@color/white"
+                        android:onClick="onLocalVideoMuteClicked"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/video_enabled" />
 
-                <ImageView
+                </com.github.florent37.shapeofview.shapes.CircleView>
+
+                <com.github.florent37.shapeofview.shapes.CircleView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="20"
-                    android:onClick="onSwitchCameraClicked"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/switch_camera" />
+                    android:layout_weight="20">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        android:background="@color/white"
+                        android:onClick="onLocalAudioMuteClicked"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/mic_enabled" />
+
+                </com.github.florent37.shapeofview.shapes.CircleView>
+
+                <com.github.florent37.shapeofview.shapes.CircleView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="20">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        android:background="@color/white"
+                        android:onClick="onSwitchCameraClicked"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/switch_camera" />
+
+                </com.github.florent37.shapeofview.shapes.CircleView>
+
 
                 <ImageView
                     android:layout_width="0dp"
@@ -177,10 +254,10 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:visibility="gone"
         android:id="@+id/progressBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="invisible">
 
         <ProgressBar
             android:layout_width="wrap_content"

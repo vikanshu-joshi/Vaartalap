@@ -3,7 +3,6 @@ package com.vikanshu.vaartalap.CallingActivity
 import android.Manifest
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -50,6 +49,9 @@ class IncomingCallActivity : AppCompatActivity() {
     private lateinit var incomingCallLayout: LinearLayout
     private lateinit var videoChatLayout: ConstraintLayout
     private lateinit var progressBar: ConstraintLayout
+    private lateinit var videoChanged: TextView
+    private lateinit var audioChanged: TextView
+    private lateinit var callGoingImage: ImageView
 
     private lateinit var ringtone: String
     private var screenshotsAllowed = false
@@ -62,41 +64,186 @@ class IncomingCallActivity : AppCompatActivity() {
 
     private var mRtcEngine: RtcEngine? = null
     private val mRtcEventHandler = object : IRtcEngineEventHandler() {
+
+        override fun onRemoteAudioStateChanged(id: Int, state: Int, reason: Int, p3: Int) {
+            when (reason) {
+                0 -> {
+                    runOnUiThread {
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                1 -> {
+                    runOnUiThread {
+                        audioChanged.text = getString(R.string.audio_network_congestion)
+                        audioChanged.visibility = View.VISIBLE
+                    }
+                }
+                2 -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                3 -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                4 -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                5 -> {
+                    runOnUiThread {
+                        audioChanged.text = getString(R.string.audio_muted)
+                        audioChanged.visibility = View.VISIBLE
+                    }
+                }
+                6 -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                7 -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+                else -> {
+                    runOnUiThread {
+                        audioChanged.text = ""
+                        audioChanged.visibility = View.INVISIBLE
+                    }
+                }
+            }
+            super.onRemoteAudioStateChanged(id, state, reason, p3)
+        }
+
+        override fun onRemoteVideoStateChanged(id: Int, state: Int, reason: Int, p3: Int) {
+            when (reason) {
+                0 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.visibility = View.INVISIBLE
+                    }
+                }
+                1 -> {
+                    runOnUiThread {
+                        videoChanged.text = getString(R.string.video_network_congestion)
+                        videoChanged.visibility = View.VISIBLE
+                    }
+                }
+                2 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.text = ""
+                        videoChanged.visibility = View.INVISIBLE
+                    }
+                }
+                3 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.text = ""
+                        videoChanged.visibility = View.INVISIBLE
+                    }
+                }
+                4 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.text = ""
+                        videoChanged.visibility = View.INVISIBLE
+                    }
+                }
+                5 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.VISIBLE
+                        videoChanged.text = getString(R.string.video_disabled)
+                        videoChanged.visibility = View.VISIBLE
+                        onRemoteUserVideoMuted(id, true)
+                    }
+                }
+                6 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.text = ""
+                        videoChanged.visibility = View.INVISIBLE
+                        onRemoteUserVideoMuted(id, false)
+                    }
+                }
+                7 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.VISIBLE
+                        videoChanged.text = getString(R.string.user_offline)
+                        videoChanged.visibility = View.VISIBLE
+                    }
+                }
+                8 -> {
+                    runOnUiThread {
+//                        callGoingImage.visibility = View.INVISIBLE
+                        videoChanged.text = getString(R.string.converting_to_audio)
+                        videoChanged.visibility = View.VISIBLE
+                    }
+                }
+                9 -> {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@IncomingCallActivity,
+                            "Returning to video call",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        videoChanged.text = ""
+                        videoChanged.visibility = View.INVISIBLE
+                    }
+                }
+                else -> {
+                    videoChanged.text = ""
+                    runOnUiThread { videoChanged.visibility = View.INVISIBLE }
+                }
+            }
+            super.onRemoteVideoStateChanged(id, state, reason, p3)
+        }
+
         override fun onFirstRemoteVideoDecoded(uid: Int, width: Int, height: Int, elapsed: Int) {
             runOnUiThread { setupRemoteVideo(uid) }
         }
+
         override fun onUserOffline(uid: Int, reason: Int) {
             runOnUiThread { onRemoteUserLeft() }
-        }
-        override fun onUserMuteVideo(uid: Int, muted: Boolean) {
-            runOnUiThread { onRemoteUserVideoMuted(uid, muted) }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        screenshotsAllowed = prefs.getBoolean(getString(R.string.preference_key_screenshots),false)
-        if(!screenshotsAllowed){
-            window.setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE)
+        screenshotsAllowed = prefs.getBoolean(getString(R.string.preference_key_screenshots), false)
+        if (!screenshotsAllowed) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+            )
         }
         setContentView(R.layout.activity_incoming_call)
 
-        val extras = intent.extras!!
-        callerName = extras["name"].toString()
-        callerNumber = extras["number"].toString()
-        callerImage = extras["image"].toString()
-        callerUID = extras["uid"].toString()
-        callID = extras["id"].toString()
-        channelName = extras["channel"].toString()
+        val extras = intent.extras
+        callerName = extras?.get("name").toString()
+        callerNumber = extras?.get("number").toString()
+        callerImage = extras?.get("image").toString()
+        callerUID = extras?.get("uid").toString()
+        callID = extras?.get("id").toString()
+        channelName = extras?.get("channel").toString()
 
 
-        myName = prefs.getString(getString(R.string.preference_key_name),"").toString()
-        myNumber = prefs.getString(getString(R.string.preference_key_number),"").toString()
-        myImage = prefs.getString(getString(R.string.preference_key_image),"").toString()
-        myUID = prefs.getString(getString(R.string.preference_key_uid),"").toString()
-        ringtone = prefs.getString(getString(R.string.preference_key_ringtone),"R.raw.child_laugh").toString()
+        myName = prefs.getString(getString(R.string.preference_key_name), "").toString()
+        myNumber = prefs.getString(getString(R.string.preference_key_number), "").toString()
+        myImage = prefs.getString(getString(R.string.preference_key_image), "").toString()
+        myUID = prefs.getString(getString(R.string.preference_key_uid), "").toString()
+        ringtone = prefs.getString(getString(R.string.preference_key_ringtone), "R.raw.child_laugh")
+            .toString()
 
         callerNameView = findViewById(R.id.name_caller)
         callerNumberView = findViewById(R.id.number_caller)
@@ -107,6 +254,9 @@ class IncomingCallActivity : AppCompatActivity() {
         incomingCallLayout = findViewById(R.id.incoming_call_layout)
         videoChatLayout = findViewById(R.id.activity_video_chat_view)
         progressBar = findViewById(R.id.progressBarLayout)
+        videoChanged = findViewById(R.id.video_mute)
+        audioChanged = findViewById(R.id.audio_mute)
+        callGoingImage = findViewById(R.id.image_call_going)
 
         incomingCallLayout.visibility = View.VISIBLE
         videoChatLayout.visibility = View.GONE
@@ -114,61 +264,67 @@ class IncomingCallActivity : AppCompatActivity() {
 
         setView()
 
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
-            initAgoraEngineAndJoinChannel()
-        }
-
         firebaseFirestore = FirebaseFirestore.getInstance()
 
         acceptCallButton.setOnClickListener { acceptCall() }
         rejectCallButton.setOnClickListener { rejectCall() }
     }
 
-    private fun acceptCall(){
+    private fun acceptCall() {
         callAccepted = true
-        firebaseFirestore.collection("users").document(myNumber).update("status","BUSY")
-        firebaseFirestore.collection("users").document(myNumber)
-            .collection("LOGS").document(callID).update("status","A")
+//        firebaseFirestore.collection("status").document(myNumber).update("status", "BUSY")
+//        firebaseFirestore.collection("users").document(myNumber)
+//            .collection("LOGS").document(callID).update("status", "A")
         incomingCallLayout.visibility = View.GONE
         videoChatLayout.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         initAgoraEngineAndJoinChannel()
     }
 
-    private fun rejectCall(){
+    private fun rejectCall() {
         incomingCallLayout.visibility = View.GONE
         videoChatLayout.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
         firebaseFirestore.collection("users").document(myNumber)
-            .update("status","IDLE").addOnSuccessListener {
+            .update("status", "IDLE").addOnSuccessListener {
                 firebaseFirestore.collection("users").document(myNumber)
-                    .collection("LOGS").document(callID).update("status","R").addOnSuccessListener {
+                    .collection("LOGS").document(callID).update("status", "R")
+                    .addOnSuccessListener {
                         this.finish()
                     }
             }
     }
 
     override fun onBackPressed() {
-        if(callAccepted){
-            Toast.makeText(this,"Please Wait......",Toast.LENGTH_LONG).show()
-        }else{
+        if (callAccepted) {
+            Toast.makeText(this, "Please Wait......", Toast.LENGTH_LONG).show()
+        } else {
             rejectCall()
         }
     }
 
-    private fun setView(){
+    private fun setView() {
         callerNameView.text = callerName
         callerNumberView.text = callerNumber
         callTypeView.text = getString(R.string.incoming)
         Picasso.with(this).load(callerImage)
             .placeholder(this.getDrawable(R.drawable.icon_loading))
             .error(this.getDrawable(R.drawable.default_user))
-            .into(callerImageView,object : Callback{
+            .into(callerImageView, object : Callback {
                 override fun onSuccess() {}
                 override fun onError() {
-                    Toast.makeText(this@IncomingCallActivity,"Error loading caller image",Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@IncomingCallActivity,
+                        "Error loading caller image",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             })
+//        callGoingImage.visibility = View.INVISIBLE
+        Picasso.with(this).load(callerImage)
+            .placeholder(this.getDrawable(R.drawable.icon_loading))
+            .error(this.getDrawable(R.drawable.default_user))
+            .into(callGoingImage)
     }
 
     private fun initAgoraEngineAndJoinChannel() {
@@ -229,7 +385,7 @@ class IncomingCallActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if(callAccepted){
+        if (callAccepted) {
             leaveChannel()
             RtcEngine.destroy()
             mRtcEngine = null
@@ -239,40 +395,25 @@ class IncomingCallActivity : AppCompatActivity() {
     fun onLocalVideoMuteClicked(view: View) {
         videoDisabled = !videoDisabled
         val iv = view as ImageView
-//        if (iv.isSelected) {
-//            iv.isSelected = false
-//            iv.clearColorFilter()
-//        } else {
-//            iv.isSelected = true
-//            iv.setColorFilter(resources.getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY)
-//        }
-        if(videoDisabled){
+        if (videoDisabled) {
             iv.setImageDrawable(this.getDrawable(R.drawable.video_disabled))
-        }else{
+            iv.setBackgroundColor(resources.getColor(R.color.colorAccent))
+        } else {
             iv.setImageDrawable(this.getDrawable(R.drawable.video_enabled))
+            iv.setBackgroundColor(resources.getColor(R.color.white))
         }
         mRtcEngine!!.muteLocalVideoStream(videoDisabled)
-
-//        val container = findViewById<FrameLayout>(R.id.local_video_view_container)
-//        val surfaceView = container.getChildAt(0) as SurfaceView
-//        surfaceView.setZOrderMediaOverlay(!iv.isSelected)
-//        surfaceView.visibility = if (iv.isSelected) View.GONE else View.VISIBLE
     }
 
     fun onLocalAudioMuteClicked(view: View) {
         audioMuted = !audioMuted
         val iv = view as ImageView
-//        if (iv.isSelected) {
-//            iv.isSelected = false
-//            iv.clearColorFilter()
-//        } else {
-//            iv.isSelected = true
-//            iv.setColorFilter(resources.getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY)
-//        }
-        if(audioMuted){
+        if (audioMuted) {
             iv.setImageDrawable(this.getDrawable(R.drawable.mic_disabled))
-        }else{
+            iv.setBackgroundColor(resources.getColor(R.color.colorAccent))
+        } else {
             iv.setImageDrawable(this.getDrawable(R.drawable.mic_enabled))
+            iv.setBackgroundColor(resources.getColor(R.color.white))
         }
         mRtcEngine!!.muteLocalAudioStream(audioMuted)
     }
@@ -355,9 +496,7 @@ class IncomingCallActivity : AppCompatActivity() {
 
     private fun onRemoteUserVideoMuted(uid: Int, muted: Boolean) {
         val container = findViewById<FrameLayout>(R.id.remote_video_view_container)
-
         val surfaceView = container.getChildAt(0) as SurfaceView
-
         val tag = surfaceView.tag
         if (tag != null && tag as Int == uid) {
             surfaceView.visibility = if (muted) View.GONE else View.VISIBLE
