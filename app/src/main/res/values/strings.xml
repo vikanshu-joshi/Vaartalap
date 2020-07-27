@@ -22,6 +22,8 @@
     <string name="preference_key_missed_call_notification">missed call notification</string>
     <string name="preference_key_incoming_call_notification">incoming call notification</string>
     <string name="preference_key_video_message_notification">video message notification</string>
+    <string name="calling">CALLING</string>
+    <string name="incoming">INCOMING CALL FROM</string>
 
 
     <string-array name="ringtones_list">
