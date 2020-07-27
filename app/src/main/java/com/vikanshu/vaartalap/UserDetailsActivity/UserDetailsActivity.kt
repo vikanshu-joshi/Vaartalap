@@ -105,7 +105,6 @@ class UserDetailsActivity : AppCompatActivity() {
                 data[getString(R.string.preference_key_name)] = FINAL_USER_NAME
                 data[getString(R.string.preference_key_image)] = FINAL_USER_IMAGE_URI
                 data[getString(R.string.preference_key_uid)] = auth.uid.toString()
-                data["token"] = ""
                 val manager = PreferenceManager.getDefaultSharedPreferences(this)
                 val editor = manager.edit()
                 editor.putString(getString(R.string.preference_key_name),FINAL_USER_NAME)
@@ -144,7 +143,6 @@ class UserDetailsActivity : AppCompatActivity() {
                             data[getString(R.string.preference_key_name)] = FINAL_USER_NAME
                             data[getString(R.string.preference_key_image)] = FINAL_USER_IMAGE_URI
                             data[getString(R.string.preference_key_uid)] = auth.uid.toString()
-                            data["token"] = ""
                             val manager = PreferenceManager.getDefaultSharedPreferences(this)
                             val editor = manager.edit()
                             editor.putString(getString(R.string.preference_key_name),FINAL_USER_NAME)

@@ -26,7 +26,7 @@ import io.agora.rtc.video.VideoEncoderConfiguration
 
 class CallingActivity : AppCompatActivity() {
 
-    private lateinit var callID: String
+//    private lateinit var callID: String
     private lateinit var callerName: String
     private lateinit var callerNumber: String
     private lateinit var callerImage: String
@@ -236,7 +236,7 @@ class CallingActivity : AppCompatActivity() {
         callerNumber = extras?.get("number").toString()
         callerImage = extras?.get("image").toString()
         callerUID = extras?.get("uid").toString()
-        callID = extras?.get("id").toString()
+//        callID = extras?.get("id").toString()
         channelName = extras?.get("channel").toString()
         callType = extras?.get("type").toString()
 
@@ -277,14 +277,15 @@ class CallingActivity : AppCompatActivity() {
         incomingCallLayout.visibility = View.GONE
         videoChatLayout.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
-        firebaseFirestore.collection("users").document(myNumber)
-            .update("status", "IDLE").addOnSuccessListener {
-                firebaseFirestore.collection("users").document(myNumber)
-                    .collection("LOGS").document(callID).update("status", "R")
-                    .addOnSuccessListener {
-                        this.finish()
-                    }
-            }
+        this.finish()
+//        firebaseFirestore.collection("users").document(myNumber)
+//            .update("status", "IDLE").addOnSuccessListener {
+//                firebaseFirestore.collection("users").document(myNumber)
+//                    .collection("LOGS").document(callID).update("status", "R")
+//                    .addOnSuccessListener {
+//                        this.finish()
+//                    }
+//            }
     }
 
     override fun onBackPressed() {
@@ -297,6 +298,9 @@ class CallingActivity : AppCompatActivity() {
 
     private fun setView() {
         if(callType == "I"){
+            incomingCallLayout.visibility = View.VISIBLE
+            videoChatLayout.visibility = View.INVISIBLE
+            progressBar.visibility = View.INVISIBLE
             callerNameView.text = callerName
             callerNumberView.text = callerNumber
             callTypeView.text = getString(R.string.incoming)
@@ -423,6 +427,9 @@ class CallingActivity : AppCompatActivity() {
     }
 
     fun onEndCallClicked(view: View) {
+        leaveChannel()
+        RtcEngine.destroy()
+        mRtcEngine = null
         finish()
     }
 

@@ -22,6 +22,9 @@ import com.vikanshu.vaartalap.Database.ContactsDBHelper
 import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.model.ContactsModel
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class ContactsFragment : Fragment() {
@@ -57,11 +60,18 @@ class ContactsFragment : Fragment() {
 
         mOnClick = object : ContactsAdapter.ListItemClickListener {
             override fun onItemClicked(view: View) {
-                Toast.makeText(ctx,view.tag.toString(),Toast.LENGTH_LONG).show()
-                val intent = Intent(ctx,CallingActivity::class.java)
-                intent.putExtra("type","O")
-                intent.putExtra("channel","vikanshu")
-                startActivity(intent)
+                val channel = UUID.randomUUID().toString()
+                val data = HashMap<String,Any>()
+                data["channel"] = channel
+                data["name"] = userDataSharedPref.getString(getString(R.string.preference_key_name),"").toString()
+                data["uid"] = userDataSharedPref.getString(getString(R.string.preference_key_uid),"").toString()
+                data["image"] = userDataSharedPref.getString(getString(R.string.preference_key_image),"").toString()
+                firestore.collection("INCOMING").document(view.tag.toString()).set(data).addOnSuccessListener {
+                    val intent = Intent(ctx,CallingActivity::class.java)
+                    intent.putExtra("type","O")
+                    intent.putExtra("channel",channel)
+                    startActivity(intent)
+                }
             }
         }
 
