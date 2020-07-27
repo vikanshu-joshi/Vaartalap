@@ -36,8 +36,8 @@ class IncomingCallActivity : AppCompatActivity() {
     private lateinit var callerNameView: TextView
     private lateinit var callerNumberView: TextView
     private lateinit var callerImageView: ImageView
-    private lateinit var acceptCallButton: Button
-    private lateinit var rejectCallButton: Button
+    private lateinit var acceptCallButton: ImageView
+    private lateinit var rejectCallButton: ImageView
     private lateinit var channelName: String
 
     private lateinit var prefs: SharedPreferences

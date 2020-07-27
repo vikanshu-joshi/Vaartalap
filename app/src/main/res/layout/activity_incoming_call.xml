@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         android:weightSum="1"
         tools:context=".CallingActivity.IncomingCallActivity">
 
@@ -70,14 +70,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/reject_caller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/reject_round_button"
-                android:padding="20dp"
-                android:scaleType="center"
-                android:src="@drawable/icon_reject_call"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/btn_end_call"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -85,14 +83,12 @@
                 app:layout_constraintStart_toEndOf="@+id/accept_caller"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/accept_caller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/calling_round_button"
-                android:padding="20dp"
-                android:scaleType="center"
-                android:src="@drawable/icon_accept_call"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/btn_start_call"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/reject_caller"
@@ -106,7 +102,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/activity_video_chat_view"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
