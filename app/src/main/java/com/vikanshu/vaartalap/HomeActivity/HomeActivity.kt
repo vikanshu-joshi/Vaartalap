@@ -58,7 +58,7 @@ class HomeActivity : AppCompatActivity() {
                     firestore.collection("tokens").document(number).set(data)
             })
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
-        userPreferences.edit().putBoolean(getString(R.string.preference_key_status),true).apply()
+        userPreferences.edit().putBoolean(getString(R.string.preference_key_status),false).apply()
         startService(Intent(this,TempIncomingService::class.java))
     }
 

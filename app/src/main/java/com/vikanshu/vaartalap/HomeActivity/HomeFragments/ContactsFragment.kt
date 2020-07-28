@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import com.vikanshu.vaartalap.CallingActivity.CallingActivity
+import com.vikanshu.vaartalap.CallingActivity.OutgoingCallActivity
 import com.vikanshu.vaartalap.Database.ContactsDBHelper
 import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
 import com.vikanshu.vaartalap.R
@@ -61,21 +61,41 @@ class ContactsFragment : Fragment() {
         mOnClick = object : ContactsAdapter.ListItemClickListener {
             override fun onItemClicked(view: View) {
                 val channel = UUID.randomUUID().toString()
-                val data = HashMap<String,Any>()
-                data["channel"] = channel
-                data["name"] = userDataSharedPref.getString(getString(R.string.preference_key_name),"").toString()
-                data["uid"] = userDataSharedPref.getString(getString(R.string.preference_key_uid),"").toString()
-                data["image"] = userDataSharedPref.getString(getString(R.string.preference_key_image),"").toString()
-                firestore.collection("INCOMING").document(view.tag.toString()).set(data).addOnSuccessListener {
-                    val intent = Intent(ctx,CallingActivity::class.java)
-                    intent.putExtra("type","O")
-                    intent.putExtra("channel",channel)
-                    startActivity(intent)
+                val data = view.tag as HashMap<*, *>
+                if (userDataSharedPref.getBoolean(
+                        getString(R.string.preference_key_status),
+                        false
+                    )
+                ) {
+                    Toast.makeText(ctx, "Already Busy On Another Call", Toast.LENGTH_LONG).show()
+                } else {
+                    val i = Intent(ctx, OutgoingCallActivity::class.java)
+                    i.putExtra(
+                        getString(R.string.call_data_name),
+                        data["name"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_number),
+                        data["number"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_uid),
+                        data["uid"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_image),
+                        data["image"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_channel),
+                        channel
+                    )
+                    startActivity(i)
                 }
             }
         }
 
-        adapter = ContactsAdapter(ctx, contactsDBHelper.getAll(),mOnClick)
+        adapter = ContactsAdapter(ctx, contactsDBHelper.getAll(), mOnClick)
 
         contactsRecyclerView.adapter = adapter
         contactsRecyclerView.layoutManager = LinearLayoutManager(ctx)
@@ -164,7 +184,11 @@ class ContactsFragment : Fragment() {
                             phoneNo = phoneNo.substring(1)
                         if (phoneNo.startsWith("91"))
                             phoneNo = phoneNo.substring(2)
-                        if (phoneNo != userDataSharedPref.getString("number","") && phoneNo.length == 10) {
+                        if (phoneNo != userDataSharedPref.getString(
+                                "number",
+                                ""
+                            ) && phoneNo.length == 10
+                        ) {
                             result.add(ContactsModel(name, phoneNo, "", "default"))
                         }
                     }

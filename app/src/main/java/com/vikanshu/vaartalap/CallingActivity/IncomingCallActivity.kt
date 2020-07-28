@@ -31,40 +31,27 @@ class IncomingCallActivity : AppCompatActivity() {
     private lateinit var callerNumber: String
     private lateinit var callerImage: String
     private lateinit var callerUID: String
-
     private lateinit var callerNameView: TextView
     private lateinit var callerNumberView: TextView
     private lateinit var callerImageView: ImageView
     private lateinit var acceptCallButton: ImageView
     private lateinit var rejectCallButton: ImageView
-
     private lateinit var channelName: String
-
     private lateinit var prefs: SharedPreferences
-
     private lateinit var myName: String
     private lateinit var myNumber: String
     private lateinit var myImage: String
     private lateinit var myUID: String
-
     private lateinit var incomingCallLayout: LinearLayout
     private lateinit var videoChatLayout: ConstraintLayout
-
     private lateinit var incomingVideoStatus: TextView
     private lateinit var incomingAudioStatus: TextView
-
     private lateinit var audioCallImageView: ImageView
-
     private lateinit var audioMutedView: TextView
-
     private var screenshotsAllowed = false
-
     private var videoDisabled = false
     private var audioMuted = false
-
     private var callAccepted = false
-
-
     private var mRtcEngine: RtcEngine? = null
     private val mRtcEventHandler = object : IRtcEngineEventHandler() {
 
@@ -201,6 +188,7 @@ class IncomingCallActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_SECURE
             )
         }
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_incoming_call)
         fetchAllData()
         findViews()
@@ -346,6 +334,7 @@ class IncomingCallActivity : AppCompatActivity() {
     }
 
     private fun setupVideoProfile() {
+        mRtcEngine!!.adjustPlaybackSignalVolume(150)
         mRtcEngine!!.enableVideo()
         mRtcEngine!!.setVideoEncoderConfiguration(
             VideoEncoderConfiguration(

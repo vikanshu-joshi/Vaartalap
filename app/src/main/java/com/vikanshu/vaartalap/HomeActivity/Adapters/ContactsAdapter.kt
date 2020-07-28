@@ -32,7 +32,7 @@ class ContactsAdapter(
     }
 
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
-        holder.setViews(data[position].name, data[position].image, data[position].number, ctx)
+        holder.setViews(data[position].name, data[position].image, data[position].number, ctx,data[position].uid)
     }
 
     fun updateData(newData: ContactsModel) {
@@ -65,7 +65,7 @@ class ContactsViewHolder(
     private var phoneUser = itemView.findViewById<TextView>(R.id.contact_number_contacts)
     private val v = itemView
 
-    fun setViews(name: String, image: String, number: String, ctx: Context) {
+    fun setViews(name: String, image: String, number: String, ctx: Context,uid: String) {
         nameUser.text = name
         phoneUser.text = number
         if (image == "default") {
@@ -82,7 +82,12 @@ class ContactsViewHolder(
                     }
                 })
         }
-        v.tag = number
+        val data = HashMap<String,Any>()
+        data["name"] = name
+        data["number"] = number
+        data["image"] = image
+        data["uid"] = uid
+        v.tag = data
         v.setOnClickListener(this)
     }
 

@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <activity android:name=".CallingActivity.OutgoingCallActivity"></activity>
+        <activity android:name=".CallingActivity.OutgoingCallActivity"/>
         <activity android:name=".CallingActivity.IncomingCallActivity" />
 
         <service
