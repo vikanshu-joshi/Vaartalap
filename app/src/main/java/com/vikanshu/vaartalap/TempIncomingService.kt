@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.preference.PreferenceManager
 import com.google.firebase.firestore.FirebaseFirestore
-import com.vikanshu.vaartalap.CallingActivity.CallingActivity
 import java.util.*
 
 class TempIncomingService : Service() {
@@ -25,15 +24,6 @@ class TempIncomingService : Service() {
                     val image = value.data?.get("image").toString()
                     val channel = value.data?.get("channel").toString()
                     val type = "I"
-                    val i = Intent(this,CallingActivity::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    i.putExtra("name",name)
-                    i.putExtra("number",number)
-                    i.putExtra("image",image)
-                    i.putExtra("channel",channel)
-                    i.putExtra("type",type)
-                    i.putExtra("uid",uid)
-                    startActivity(i)
                 }
             }
         return START_STICKY

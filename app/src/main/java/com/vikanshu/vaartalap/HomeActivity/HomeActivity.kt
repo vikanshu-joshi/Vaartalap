@@ -14,12 +14,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
-import com.jakewharton.picasso.OkHttp3Downloader
-import com.squareup.picasso.Picasso
-import com.vikanshu.vaartalap.CallingActivity.CallingActivity
 import com.vikanshu.vaartalap.R
 import com.vikanshu.vaartalap.SettingsActivity.SettingsActivity
 import com.vikanshu.vaartalap.TempIncomingService
@@ -62,6 +58,7 @@ class HomeActivity : AppCompatActivity() {
                     firestore.collection("tokens").document(number).set(data)
             })
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
+        userPreferences.edit().putBoolean(getString(R.string.preference_key_status),true).apply()
         startService(Intent(this,TempIncomingService::class.java))
     }
 
