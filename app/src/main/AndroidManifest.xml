@@ -29,11 +29,8 @@
         <service
             android:name=".TempIncomingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
-        <activity
-            android:name=".CallingActivity.CallingActivity"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity.SettingsActivity"
             android:launchMode="singleTop"
