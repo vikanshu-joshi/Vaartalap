@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:text="Calling"
+            android:text="@string/calling"
             android:textAlignment="center"
             android:textSize="18sp" />
 
@@ -115,7 +115,7 @@
             android:layout_marginTop="24dp"
             android:background="@color/gray"
             android:padding="10dp"
-            android:text="Audio Muted"
+            android:text="@string/audio_muted"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textStyle="bold"

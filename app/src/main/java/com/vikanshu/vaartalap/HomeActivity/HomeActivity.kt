@@ -59,7 +59,7 @@ class HomeActivity : AppCompatActivity() {
             })
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
         userPreferences.edit().putBoolean(getString(R.string.preference_key_status),false).apply()
-        startService(Intent(this,TempIncomingService::class.java))
+//        startService(Intent(this,TempIncomingService::class.java))
     }
 
     private fun setTabsAndViewPager() {

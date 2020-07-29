@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.preference.PreferenceManager
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.type.DateTime
 import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import io.agora.rtc.IRtcEngineEventHandler
@@ -211,6 +212,7 @@ class OutgoingCallActivity : AppCompatActivity() {
         data[getString(R.string.call_data_image)] = myImage
         data[getString(R.string.call_data_uid)] = myUID
         data[getString(R.string.call_data_channel)] = channel
+        data[getString(R.string.call_data_timestamp)] = System.currentTimeMillis()
         firestore.collection("INCOMING").document(callerNumber)
             .set(data).addOnCompleteListener {
                 if(it.isSuccessful){
