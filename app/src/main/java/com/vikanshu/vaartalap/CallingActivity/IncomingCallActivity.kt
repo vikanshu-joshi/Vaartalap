@@ -14,11 +14,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.preference.PreferenceManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
+import com.vikanshu.vaartalap.Database.LogDBHelper
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.model.LogsModel
 import io.agora.rtc.IRtcEngineEventHandler
 import io.agora.rtc.RtcEngine
 import io.agora.rtc.video.VideoCanvas
 import io.agora.rtc.video.VideoEncoderConfiguration
+import java.util.*
+import kotlin.collections.HashMap
 
 class IncomingCallActivity : AppCompatActivity() {
 
@@ -211,27 +215,35 @@ class IncomingCallActivity : AppCompatActivity() {
             mediaPlayer.stop()
             mediaPlayer.release()
             acceptCall()
-            val data = HashMap<String, Any>()
-            data[getString(R.string.call_log_data_name)] = callerName
-            data[getString(R.string.call_log_data_number)] = callerNumber
-            data[getString(R.string.call_log_data_image)] = callerImage
-            data[getString(R.string.call_log_data_type)] = "A"
-            data[getString(R.string.call_log_data_timestamp)] = System.currentTimeMillis()
-            FirebaseFirestore.getInstance().collection("users").document(myNumber)
-                .collection("logs").document(channelName).set(data)
+            LogDBHelper(this).store(
+                LogsModel(
+                    UUID.randomUUID().toString(),
+                    callerUID,
+                    callerName,
+                    callerNumber,
+                    "I-A",
+                    System.currentTimeMillis(),
+                    channelName,
+                    callerImage
+                )
+            )
         }
         rejectCallButton.setOnClickListener {
             mediaPlayer.stop()
             mediaPlayer.release()
-            val data = HashMap<String, Any>()
-            data[getString(R.string.call_log_data_name)] = callerName
-            data[getString(R.string.call_log_data_number)] = callerNumber
-            data[getString(R.string.call_log_data_image)] = callerImage
-            data[getString(R.string.call_log_data_type)] = "R"
-            data[getString(R.string.call_log_data_timestamp)] = System.currentTimeMillis()
-            FirebaseFirestore.getInstance().collection("users").document(myNumber)
-                .collection("logs").document(channelName).set(data)
-                .addOnCompleteListener { this.finish() }
+            LogDBHelper(this).store(
+                LogsModel(
+                    UUID.randomUUID().toString(),
+                    callerUID,
+                    callerName,
+                    callerNumber,
+                    "I-R",
+                    System.currentTimeMillis(),
+                    channelName,
+                    callerImage
+                )
+            )
+            this.finish()
         }
     }
 

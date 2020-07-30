@@ -13,8 +13,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.vikanshu.vaartalap.CallingActivity.IncomingCallActivity
+import com.vikanshu.vaartalap.Database.LogDBHelper
 import com.vikanshu.vaartalap.HomeActivity.HomeActivity
+import com.vikanshu.vaartalap.model.LogsModel
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 open class CallingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
@@ -47,19 +51,21 @@ open class CallingService : FirebaseMessagingService() {
             i.putExtra(getString(R.string.call_data_image), image)
             startActivity(i)
         } else {
-            val logs = HashMap<String, Any?>()
-            logs[getString(R.string.call_log_data_name)] = name
-            logs[getString(R.string.call_log_data_number)] = number
-            logs[getString(R.string.call_log_data_image)] = image
-            logs[getString(R.string.call_log_data_type)] = "M"
-            logs[getString(R.string.call_log_data_timestamp)] = timestamp
-            FirebaseFirestore.getInstance().collection("users")
-                .document(
-                    PreferenceManager.getDefaultSharedPreferences(this)
-                        .getString(getString(R.string.preference_key_number), "").toString()
-                )
-                .collection("logs").document(channel.toString()).set(logs)
             val resultIntent = Intent(this, HomeActivity::class.java)
+
+            LogDBHelper(this).store(
+                LogsModel(
+                    UUID.randomUUID().toString(),
+                    uid.toString(),
+                    name.toString(),
+                    number.toString(),
+                    "M",
+                    timestamp,
+                    channel.toString(),
+                    image.toString()
+                )
+            )
+
             resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             val resultPendingIntent = PendingIntent.getActivity(
@@ -74,7 +80,7 @@ open class CallingService : FirebaseMessagingService() {
                 .setContentText("from $name")
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setSound(Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.pikachu))
+                .setSound(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.pikachu))
                 .setContentIntent(resultPendingIntent)
             val mNotificationManager =
                 this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -12,11 +12,15 @@ import androidx.preference.PreferenceManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.type.DateTime
 import com.squareup.picasso.Picasso
+import com.vikanshu.vaartalap.Database.LogDBHelper
 import com.vikanshu.vaartalap.R
+import com.vikanshu.vaartalap.model.LogsModel
 import io.agora.rtc.IRtcEngineEventHandler
 import io.agora.rtc.RtcEngine
 import io.agora.rtc.video.VideoCanvas
 import io.agora.rtc.video.VideoEncoderConfiguration
+import java.util.*
+import kotlin.collections.HashMap
 
 class OutgoingCallActivity : AppCompatActivity() {
 
@@ -68,7 +72,7 @@ class OutgoingCallActivity : AppCompatActivity() {
             }
             super.onUserJoined(p0, p1)
         }
-        
+
         override fun onRemoteAudioStateChanged(id: Int, state: Int, reason: Int, p3: Int) {
             when (reason) {
                 0 -> {
@@ -206,7 +210,7 @@ class OutgoingCallActivity : AppCompatActivity() {
         findViews()
         setViews()
         firestore = FirebaseFirestore.getInstance()
-        val data = HashMap<String,Any>()
+        val data = HashMap<String, Any>()
         data[getString(R.string.call_data_name)] = myName
         data[getString(R.string.call_data_number)] = myNumber
         data[getString(R.string.call_data_image)] = myImage
@@ -215,12 +219,24 @@ class OutgoingCallActivity : AppCompatActivity() {
         data[getString(R.string.call_data_timestamp)] = System.currentTimeMillis()
         firestore.collection("INCOMING").document(callerNumber)
             .set(data).addOnCompleteListener {
-                if(it.isSuccessful){
+                if (it.isSuccessful) {
                     rejectCallButton.visibility = View.VISIBLE
                     initAgoraEngineAndJoinChannel()
                     callConnected = true
-                }else{
-                    Toast.makeText(this,"Failed To Make Call",Toast.LENGTH_LONG).show()
+                    LogDBHelper(this).store(
+                        LogsModel(
+                            UUID.randomUUID().toString(),
+                            callerUid,
+                            callerName,
+                            callerNumber,
+                            "O",
+                            System.currentTimeMillis(),
+                            channel,
+                            callerImage
+                        )
+                    )
+                } else {
+                    Toast.makeText(this, "Failed To Make Call", Toast.LENGTH_LONG).show()
                 }
             }
 
