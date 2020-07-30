@@ -1,29 +1,24 @@
 package com.vikanshu.vaartalap.CallingActivity
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.SharedPreferences
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
-import android.view.SurfaceView
 import android.view.View
-import android.widget.FrameLayout
+import android.view.WindowManager
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.preference.PreferenceManager
+import com.google.firebase.firestore.FirebaseFirestore
+import com.squareup.picasso.Picasso
 import com.vikanshu.vaartalap.R
 import io.agora.rtc.IRtcEngineEventHandler
 import io.agora.rtc.RtcEngine
 import io.agora.rtc.video.VideoCanvas
 import io.agora.rtc.video.VideoEncoderConfiguration
-import android.Manifest
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.opengl.Visibility
-import android.view.WindowManager
-import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
-import com.google.firebase.firestore.FirebaseFirestore
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 
 class IncomingCallActivity : AppCompatActivity() {
 
@@ -52,6 +47,7 @@ class IncomingCallActivity : AppCompatActivity() {
     private var videoDisabled = false
     private var audioMuted = false
     private var callAccepted = false
+    private lateinit var mediaPlayer: MediaPlayer
     private var mRtcEngine: RtcEngine? = null
     private val mRtcEventHandler = object : IRtcEngineEventHandler() {
 
@@ -193,9 +189,56 @@ class IncomingCallActivity : AppCompatActivity() {
         fetchAllData()
         findViews()
         setViews()
+        val audioManager: AudioManager =
+            applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
+        val tone = prefs.getString(getString(R.string.preference_key_ringtone), "0")
+        mediaPlayer = when (tone) {
+            "0" -> {
+                MediaPlayer.create(this, R.raw.child_laugh)
+            }
+            "1" -> {
+                MediaPlayer.create(this, R.raw.iphone_call)
+            }
+            "2" -> {
+                MediaPlayer.create(this, R.raw.hangouts_call)
+            }
+            else -> {
+                MediaPlayer.create(this, R.raw.mi_call)
+            }
+        }
+        acceptCallButton.setOnClickListener {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+            acceptCall()
+            val data = HashMap<String, Any>()
+            data[getString(R.string.call_log_data_name)] = callerName
+            data[getString(R.string.call_log_data_number)] = callerNumber
+            data[getString(R.string.call_log_data_image)] = callerImage
+            data[getString(R.string.call_log_data_type)] = "A"
+            data[getString(R.string.call_log_data_timestamp)] = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("users").document(myNumber)
+                .collection("logs").document(channelName).set(data)
+        }
+        rejectCallButton.setOnClickListener {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+            val data = HashMap<String, Any>()
+            data[getString(R.string.call_log_data_name)] = callerName
+            data[getString(R.string.call_log_data_number)] = callerNumber
+            data[getString(R.string.call_log_data_image)] = callerImage
+            data[getString(R.string.call_log_data_type)] = "R"
+            data[getString(R.string.call_log_data_timestamp)] = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("users").document(myNumber)
+                .collection("logs").document(channelName).set(data)
+                .addOnCompleteListener { this.finish() }
+        }
+    }
 
-        acceptCallButton.setOnClickListener { acceptCall() }
-        rejectCallButton.setOnClickListener { this.finish() }
+    override fun onStart() {
+        mediaPlayer.isLooping = true
+        mediaPlayer.start()
+        super.onStart()
     }
 
     private fun showToast(message: String) {

@@ -33,7 +33,7 @@
             android:entryValues="@array/ringtone_values"
             android:title="Ringtone"
             app:useSimpleSummaryProvider="true"
-            android:defaultValue="R.raw.child_laugh" />
+            android:defaultValue="0" />
 
     </PreferenceCategory>
 
