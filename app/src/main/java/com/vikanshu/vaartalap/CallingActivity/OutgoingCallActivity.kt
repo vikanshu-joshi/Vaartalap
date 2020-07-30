@@ -225,7 +225,6 @@ class OutgoingCallActivity : AppCompatActivity() {
                     callConnected = true
                     LogDBHelper(this).store(
                         LogsModel(
-                            UUID.randomUUID().toString(),
                             callerUid,
                             callerName,
                             callerNumber,

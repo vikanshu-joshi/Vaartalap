@@ -217,7 +217,6 @@ class IncomingCallActivity : AppCompatActivity() {
             acceptCall()
             LogDBHelper(this).store(
                 LogsModel(
-                    UUID.randomUUID().toString(),
                     callerUID,
                     callerName,
                     callerNumber,
@@ -233,7 +232,6 @@ class IncomingCallActivity : AppCompatActivity() {
             mediaPlayer.release()
             LogDBHelper(this).store(
                 LogsModel(
-                    UUID.randomUUID().toString(),
                     callerUID,
                     callerName,
                     callerNumber,

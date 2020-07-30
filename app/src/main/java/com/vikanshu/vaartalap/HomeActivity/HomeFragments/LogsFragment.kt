@@ -1,60 +1,102 @@
 package com.vikanshu.vaartalap.HomeActivity.HomeFragments
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.firestore.FirebaseFirestore
+import com.vikanshu.vaartalap.CallingActivity.OutgoingCallActivity
+import com.vikanshu.vaartalap.Database.ContactsDBHelper
+import com.vikanshu.vaartalap.Database.LogDBHelper
+import com.vikanshu.vaartalap.HomeActivity.Adapters.ContactsAdapter
+import com.vikanshu.vaartalap.HomeActivity.Adapters.LogsAdapter
+import com.vikanshu.vaartalap.HomeActivity.Adapters.LogsViewHolder
 import com.vikanshu.vaartalap.R
+import java.util.*
+import kotlin.collections.HashMap
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LogsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LogsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var logsDBHelper: LogDBHelper
+    private lateinit var logsRecyclerView: RecyclerView
+    private lateinit var adapter: LogsAdapter
+    private lateinit var userDataSharedPref: SharedPreferences
+    private lateinit var ctx: Context
+    private lateinit var mOnClick: LogsAdapter.LogListItemClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        ctx = requireActivity().applicationContext
+        logsDBHelper = LogDBHelper(ctx)
+        userDataSharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
+    }
+
+    override fun onResume() {
+        adapter.setData(logsDBHelper.getAll())
+        super.onResume()
+    }
+
+    override fun onStart() {
+        adapter.setData(logsDBHelper.getAll())
+        super.onStart()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_logs, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LogsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LogsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        val v = inflater.inflate(R.layout.fragment_logs, container, false)
+        logsRecyclerView = v.findViewById(R.id.logs_recycer_view)
+        mOnClick = object : LogsAdapter.LogListItemClickListener {
+            override fun onItemClicked(view: View) {
+                val data = view.tag as HashMap<*, *>
+                val channel = UUID.randomUUID().toString()
+                if (userDataSharedPref.getBoolean(
+                        getString(R.string.preference_key_status),
+                        false
+                    )
+                ) {
+                    Toast.makeText(ctx, "Already Busy On Another Call", Toast.LENGTH_LONG)
+                        .show()
+                } else {
+                    val i = Intent(ctx, OutgoingCallActivity::class.java)
+                    i.putExtra(
+                        getString(R.string.call_data_name),
+                        data["name"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_number),
+                        data["number"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_uid),
+                        data["uid"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_image),
+                        data["image"].toString()
+                    )
+                    i.putExtra(
+                        getString(R.string.call_data_channel),
+                        channel
+                    )
+                    startActivity(i)
                 }
             }
+        }
+        adapter = LogsAdapter(ctx, logsDBHelper.getAll(), mOnClick)
+        logsRecyclerView.adapter = adapter
+        logsRecyclerView.layoutManager = LinearLayoutManager(ctx)
+        return v
     }
 }

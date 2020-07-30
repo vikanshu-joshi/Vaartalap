@@ -2,7 +2,6 @@ package com.vikanshu.vaartalap.model
 
 
 class LogsModel(
-    val ID: String,
     val UID: String,
     val NAME: String,
     val NUMBER: String,

@@ -27,9 +27,9 @@ class LogDBHelper(ctx: Context) : SQLiteOpenHelper(
 
     override fun onCreate(db: SQLiteDatabase?) {
         val SQL_CREATE_TABLE =
-            "CREATE TABLE $TABLE_NAME ($COLUMN_ID TEXT PRIMARY KEY, $COLUMN_NAME TEXT NOT NULL, $COLUMN_NUMBER INTEGER" +
+            "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT NOT NULL, $COLUMN_NUMBER INTEGER" +
                     " NOT NULL, $COLUMN_UID TEXT NOT NULL, $COLUMN_TYPE TEXT NOT NULL, $COLUMN_TIMESTAMP INTEGER NOT NULL," +
-                    " $COLUMN_CHANNEL TEXT NOT NULL $COLUMN_IMAGE TEXT NOT NULL)"
+                    " $COLUMN_CHANNEL TEXT NOT NULL, $COLUMN_IMAGE TEXT NOT NULL)"
         db?.execSQL(SQL_CREATE_TABLE)
     }
 
@@ -40,13 +40,12 @@ class LogDBHelper(ctx: Context) : SQLiteOpenHelper(
 
     fun getAll(): ArrayList<LogsModel> {
         val db = this.readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME"
+        val query = "SELECT * FROM $TABLE_NAME ORDER BY $COLUMN_ID DESC"
         val result = db.rawQuery(query, null)
         val list = ArrayList<LogsModel>()
         while (result.moveToNext()) {
             list.add(
                 LogsModel(
-                    result.getString(result.getColumnIndexOrThrow(COLUMN_ID)),
                     result.getString(result.getColumnIndexOrThrow(COLUMN_UID)),
                     result.getString(result.getColumnIndexOrThrow(COLUMN_NAME)),
                     result.getString(result.getColumnIndexOrThrow(COLUMN_NUMBER)),
@@ -72,7 +71,6 @@ class LogDBHelper(ctx: Context) : SQLiteOpenHelper(
         contentValues.put(COLUMN_TIMESTAMP, log.TIME)
         contentValues.put(COLUMN_NUMBER, log.NUMBER)
         contentValues.put(COLUMN_CHANNEL, log.CHANNEL)
-        contentValues.put(COLUMN_ID, log.ID)
         db.insert(TABLE_NAME, null, contentValues)
         db.close()
     }

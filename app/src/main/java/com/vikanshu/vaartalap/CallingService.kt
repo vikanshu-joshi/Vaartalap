@@ -55,7 +55,6 @@ open class CallingService : FirebaseMessagingService() {
 
             LogDBHelper(this).store(
                 LogsModel(
-                    UUID.randomUUID().toString(),
                     uid.toString(),
                     name.toString(),
                     number.toString(),
