@@ -74,7 +74,7 @@ open class CallingService : FirebaseMessagingService() {
             )
 
             val mBuilder = NotificationCompat.Builder(this);
-            mBuilder.setSmallIcon(R.drawable.ic_notification)
+            mBuilder.setSmallIcon(R.drawable.ic_launcher)
             mBuilder.setContentTitle("Missed Call")
                 .setContentText("from $name")
                 .setAutoCancel(true)
@@ -89,7 +89,7 @@ open class CallingService : FirebaseMessagingService() {
                     "1002",
                     "Missed Call Notifications",
                     importance
-                );
+                )
                 notificationChannel.enableLights(true)
                 notificationChannel.lightColor = Color.RED
                 notificationChannel.enableVibration(true);

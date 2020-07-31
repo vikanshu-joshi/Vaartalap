@@ -78,7 +78,6 @@ class HomeActivity : AppCompatActivity() {
                 false
             )
         ) {
-            println("asking")
             val alertBuilder = AlertDialog.Builder(this)
             alertBuilder.setCancelable(false)
             alertBuilder.setMessage("Please Allow following Permissions to show incoming calls")

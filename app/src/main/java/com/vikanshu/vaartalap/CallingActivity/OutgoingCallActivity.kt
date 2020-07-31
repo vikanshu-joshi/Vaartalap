@@ -198,12 +198,12 @@ class OutgoingCallActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         screenshotsAllowed = prefs.getBoolean(getString(R.string.preference_key_screenshots), false)
-        if (!screenshotsAllowed) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE
-            )
-        }
+//        if (!screenshotsAllowed) {
+//            window.setFlags(
+//                WindowManager.LayoutParams.FLAG_SECURE,
+//                WindowManager.LayoutParams.FLAG_SECURE
+//            )
+//        }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_outgoing_call)
         fetchAllData()
