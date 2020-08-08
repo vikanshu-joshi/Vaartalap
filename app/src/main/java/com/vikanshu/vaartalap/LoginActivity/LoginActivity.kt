@@ -211,6 +211,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         progressDialog.show()
+        NUMBER = NUMBER.replace(" ","")
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
